@@ -1,0 +1,62 @@
+<div class="page">
+  <header class="navbar">
+    <a routerLink="/principal" class="brand" aria-label="Inicio">
+      <span class="brand-mark">
+        <img src="/assets/logo.png" alt="" width="48" height="48" />
+      </span>
+    </a>
+
+    <nav class="nav-links" aria-label="Principal">
+      <a
+        routerLink="/parqueaderos"
+        class="nav-item"
+        routerLinkActive="nav-item--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Parqueaderos</a
+      >
+      <a routerLink="/principal" class="nav-item">Pagos</a>
+      <a routerLink="/reservas" class="nav-item">Reservas</a>
+      <a routerLink="/perfil" class="nav-item">Mi Perfil</a>
+    </nav>
+
+    <button type="button" class="avatar" aria-label="Cuenta de usuario">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        />
+      </svg>
+    </button>
+  </header>
+
+  <main class="main">
+    @for (p of items; track p.nombre) {
+      <article class="lot-card">
+        <div class="lot-info">
+          <h2 class="lot-title">{{ p.nombre }}</h2>
+          <p class="lot-line">Capacidad total: {{ p.capacidadTotal }} parqueaderos</p>
+          <p class="lot-line">Cupos disponibles: {{ p.cuposDisponibles }} parqueaderos</p>
+          @if (p.nota) {
+            <p class="lot-note">{{ p.nota }}</p>
+          }
+        </div>
+
+        <div class="lot-visual">
+          <img [src]="imagenCarro(p.disponibilidadPct)" alt="" class="lot-car" width="280" height="120" />
+        </div>
+
+        <div class="lot-stats">
+          <div class="stat-pill">
+            <div class="stat-row">
+              <span class="stat-label">Ocupación:</span>
+              <span class="stat-value">{{ p.ocupacionPct }}%</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Disponibilidad:</span>
+              <span class="stat-value">{{ p.disponibilidadPct }}%</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    }
+  </main>
+</div>

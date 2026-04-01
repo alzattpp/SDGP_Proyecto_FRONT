@@ -1,0 +1,76 @@
+<div class="page">
+  <header class="navbar">
+    <a routerLink="/principal" class="brand" aria-label="Inicio">
+      <span class="brand-mark">
+        <img src="/assets/logo.png" alt="" width="48" height="48" />
+      </span>
+    </a>
+
+    <nav class="nav-links" aria-label="Principal">
+      <a
+        routerLink="/parqueaderos"
+        class="nav-item"
+        routerLinkActive="nav-item--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Parqueaderos</a
+      >
+      <a routerLink="/principal" class="nav-item">Pagos</a>
+      <a
+        routerLink="/reservas"
+        class="nav-item"
+        [class.nav-item--active]="navReservasActivo()"
+        [attr.aria-current]="navReservasActivo() ? 'page' : null"
+        >Reservas</a
+      >
+      <a routerLink="/perfil" class="nav-item">Mi Perfil</a>
+    </nav>
+
+    <button type="button" class="avatar" aria-label="Cuenta de usuario">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        />
+      </svg>
+    </button>
+  </header>
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <h1 id="hero-title" class="hero-title">Gestiona tu reserva</h1>
+    </div>
+  </section>
+
+  <main class="content">
+    <div class="panels panels--single">
+      <section class="panel panel--form">
+        <form class="form" aria-label="Nueva reserva" (submit)="$event.preventDefault()">
+          <div class="field">
+            <label>Parqueadero</label>
+            <input type="text" value="Parqueadero Bavaria" readonly />
+          </div>
+
+          <div class="field">
+            <label for="fecha">Fecha reserva</label>
+            <input id="fecha" name="fecha" type="date" />
+          </div>
+
+          <div class="field">
+            <label for="hora">Hora</label>
+            <input id="hora" name="hora" type="time" />
+          </div>
+
+          <div class="field">
+            <label for="placa">Placa Vehiculo</label>
+            <input id="placa" name="placa" type="text" placeholder="Ej. ABC123" autocomplete="off" />
+          </div>
+
+          <button type="submit" class="btn-submit">Reservar</button>
+        </form>
+
+        <a routerLink="/ver-reservas" class="btn-ver-lista">Ver reservas</a>
+      </section>
+    </div>
+  </main>
+</div>

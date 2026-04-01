@@ -1,0 +1,207 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.contenedor {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Roboto', system-ui, sans-serif;
+}
+
+/* Lado izquierdo ~55% */
+.lado-izq {
+  flex: 1.2;
+  min-height: 100vh;
+  background: url('/assets/fondo.png') no-repeat center center;
+  background-size: cover;
+  position: relative;
+}
+
+.overlay {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  background: rgba(0, 100, 180, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.logo {
+  max-width: min(280px, 85vw);
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.25));
+}
+
+/* Lado derecho ~45% */
+.lado-der {
+  flex: 1;
+  min-width: 0;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 8vw;
+}
+
+.formulario {
+  width: 100%;
+  max-width: 340px;
+}
+
+.titulo {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 2rem;
+  letter-spacing: -0.02em;
+}
+
+.campo {
+  margin-bottom: 1.5rem;
+}
+
+.campo label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: #757575;
+  margin-bottom: 0.35rem;
+}
+
+.campo input {
+  width: 100%;
+  padding: 0.5rem 0;
+  border: none;
+  border-bottom: 1px solid #d0d0d0;
+  background: transparent;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #222;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.campo input::placeholder {
+  color: #b0b0b0;
+}
+
+.campo input:focus {
+  border-bottom-color: #1976d2;
+}
+
+.btn-login {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.85rem 1rem;
+  background: #000;
+  color: #e8c547;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.btn-login:hover {
+  opacity: 0.92;
+}
+
+.btn-login:active {
+  transform: scale(0.99);
+}
+
+.link-password {
+  display: block;
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #1565c0;
+  text-decoration: none;
+}
+
+.link-password:hover {
+  text-decoration: underline;
+}
+
+.registro {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.9375rem;
+  color: #333;
+}
+
+.registro a {
+  color: #1565c0;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.registro a:hover {
+  text-decoration: underline;
+}
+
+/* FAB amarillo — esquina inferior derecha */
+.fab-home {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 50;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ffeb3b;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fab-home:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.fab-home svg {
+  width: 26px;
+  height: 26px;
+}
+
+@media (max-width: 768px) {
+  .contenedor {
+    flex-direction: column;
+  }
+
+  .lado-izq {
+    flex: none;
+    min-height: 38vh;
+  }
+
+  .overlay {
+    min-height: 38vh;
+  }
+
+  .lado-der {
+    flex: 1;
+    padding: 2.5rem 1.75rem 5rem;
+  }
+
+  .fab-home {
+    bottom: 1rem;
+    right: 1rem;
+  }
+}

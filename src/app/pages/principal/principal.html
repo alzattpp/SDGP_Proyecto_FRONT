@@ -1,0 +1,66 @@
+<div class="page">
+  <header class="navbar">
+    <a routerLink="/principal" class="brand" aria-label="Inicio">
+      <span class="brand-mark">
+        <img src="/assets/logo.png" alt="" width="48" height="48" />
+      </span>
+    </a>
+
+    <nav class="nav-links" aria-label="Principal">
+      <a
+        routerLink="/parqueaderos"
+        class="nav-item"
+        routerLinkActive="nav-item--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Parqueaderos</a
+      >
+      <a routerLink="/principal" class="nav-item">Pagos</a>
+      <a routerLink="/reservas" class="nav-item">Reservas</a>
+      <a routerLink="/perfil" class="nav-item">Mi Perfil</a>
+    </nav>
+
+    <button type="button" class="avatar" aria-label="Cuenta de usuario">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        />
+      </svg>
+    </button>
+  </header>
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <h1 id="hero-title" class="hero-title">BIENVENIDO</h1>
+      <p class="hero-text">
+        Al Sistema de Gestión de Parqueaderos. Administra tu ingreso, consulta disponibilidad en tiempo real y
+        realiza tus pagos de manera rápida y segura. Facilitamos el acceso y control de los parqueaderos
+        institucionales para una mejor experiencia universitaria.
+      </p>
+    </div>
+  </section>
+
+  <section class="features" aria-label="Servicios">
+    <article class="card">
+      <h2 class="card-title">Parqueaderos</h2>
+      <p class="card-desc">
+        Consulta la disponibilidad en tiempo real y conoce la ubicación de cada parqueadero.
+      </p>
+      <a routerLink="/parqueaderos" class="card-btn">Ver Parqueaderos</a>
+    </article>
+
+    <article class="card">
+      <h2 class="card-title">Pagos</h2>
+      <p class="card-desc">Realiza y consulta tus pagos de forma rápida, segura y automatizada.</p>
+      <a href="#" class="card-btn">Realizar Pago</a>
+    </article>
+
+    <article class="card">
+      <h2 class="card-title">Reservas</h2>
+      <p class="card-desc">Programa tu ingreso con anticipación y asegura tu cupo fácilmente.</p>
+      <a routerLink="/reservas" class="card-btn">Reservar</a>
+    </article>
+  </section>
+
+  <footer class="site-footer"></footer>
+</div>

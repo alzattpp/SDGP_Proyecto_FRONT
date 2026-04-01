@@ -1,0 +1,119 @@
+<div class="page">
+  <header class="navbar">
+    <a routerLink="/principal" class="brand" aria-label="Inicio">
+      <span class="brand-mark">
+        <img src="/assets/logo.png" alt="" width="48" height="48" />
+      </span>
+    </a>
+
+    <nav class="nav-links" aria-label="Principal">
+      <a
+        routerLink="/parqueaderos"
+        class="nav-item"
+        routerLinkActive="nav-item--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Parqueaderos</a
+      >
+      <a routerLink="/principal" class="nav-item">Pagos</a>
+      <a
+        routerLink="/reservas"
+        class="nav-item"
+        [class.nav-item--active]="navReservasActivo()"
+        [attr.aria-current]="navReservasActivo() ? 'page' : null"
+        >Reservas</a
+      >
+      <a routerLink="/perfil" class="nav-item">Mi Perfil</a>
+    </nav>
+
+    <button type="button" class="avatar" aria-label="Cuenta de usuario">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        />
+      </svg>
+    </button>
+  </header>
+
+  <main class="main">
+    <div class="main-inner">
+      <h1 class="page-title">Reservas</h1>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Placa</th>
+              <th>Parqueadero</th>
+              <th>Hora</th>
+              <th>Fecha</th>
+              <th>Gestión</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of reservas; track r.id) {
+              <tr>
+                <td>{{ r.nombre }}</td>
+                <td>{{ r.placa }}</td>
+                <td>{{ r.parqueadero }}</td>
+                <td>{{ r.hora }}</td>
+                <td>{{ r.fecha }}</td>
+                <td class="cell-actions">
+                  <button type="button" class="icon-btn icon-btn--edit" (click)="openEdit(r)" aria-label="Editar reserva">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="icon-btn icon-btn--delete"
+                    (click)="confirmarEliminar(r)"
+                    aria-label="Eliminar reserva"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path
+                        d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <p class="back-row">
+        <a routerLink="/reservas" class="link-back">← Volver a nueva reserva</a>
+      </p>
+    </div>
+  </main>
+
+  @if (editOpen) {
+    <div class="modal-backdrop" role="presentation" (click)="closeEdit()"></div>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-title" (click)="$event.stopPropagation()">
+      <h2 id="edit-title" class="modal-title">Editar Reserva</h2>
+      <form class="modal-form" (submit)="$event.preventDefault(); guardarEdicion()">
+        <div class="modal-field">
+          <label for="edit-placa">Placa</label>
+          <input id="edit-placa" name="editPlaca" [(ngModel)]="editPlaca" type="text" autocomplete="off" />
+        </div>
+        <div class="modal-field">
+          <label for="edit-parqueadero">Parqueadero</label>
+          <select id="edit-parqueadero" name="editParqueadero" [(ngModel)]="editParqueadero">
+            @for (p of parqueaderos; track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </div>
+        <div class="modal-field">
+          <label for="edit-hora">Hora</label>
+          <input id="edit-hora" name="editHora" [(ngModel)]="editHora" type="time" />
+        </div>
+        <button type="submit" class="btn-modificar">Modificar</button>
+      </form>
+    </div>
+  }
+</div>
