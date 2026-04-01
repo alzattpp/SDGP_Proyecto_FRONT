@@ -13,7 +13,7 @@
   font-family: 'Roboto', system-ui, sans-serif;
 }
 
-/* Lado izquierdo ~55% */
+/* Lado izquierdo */
 .lado-izq {
   flex: 1.2;
   min-height: 100vh;
@@ -26,7 +26,7 @@
   width: 100%;
   height: 100%;
   min-height: 100vh;
-  background: rgba(0, 100, 180, 0.55);
+  background: rgba(0, 105, 163, 0.55);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -41,11 +41,11 @@
   filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.25));
 }
 
-/* Lado derecho ~45% */
+/* Lado derecho — fondo blanco, formulario como referencia */
 .lado-der {
   flex: 1;
   min-width: 0;
-  background: #fff;
+  background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -58,11 +58,12 @@
 }
 
 .titulo {
-  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-size: 2rem;
   font-weight: 700;
-  color: #111;
+  color: #111111;
   margin: 0 0 2rem;
   letter-spacing: -0.02em;
+  text-align: left;
 }
 
 .campo {
@@ -71,17 +72,17 @@
 
 .campo label {
   display: block;
-  font-size: 0.8125rem;
+  font-size: 0.9rem;
   font-weight: 400;
-  color: #757575;
-  margin-bottom: 0.35rem;
+  color: #556b82;
+  margin-bottom: 5px;
 }
 
 .campo input {
   width: 100%;
-  padding: 0.5rem 0;
+  padding: 10px 0;
   border: none;
-  border-bottom: 1px solid #d0d0d0;
+  border-bottom: 1px solid #e0e0e0;
   background: transparent;
   font-size: 1rem;
   font-family: inherit;
@@ -95,21 +96,24 @@
 }
 
 .campo input:focus {
-  border-bottom-color: #1976d2;
+  border-bottom-color: #0069a3;
 }
 
 .btn-login {
+  display: block;
   width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.85rem 1rem;
-  background: #000;
-  color: #e8c547;
+  margin-top: 1.25rem;
+  padding: 12px 1rem;
+  background: #000000;
+  color: #ffffff;
   font-family: inherit;
   font-size: 1rem;
   font-weight: 700;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
+  text-align: center;
+  text-decoration: none;
   transition: opacity 0.2s ease, transform 0.15s ease;
 }
 
@@ -125,9 +129,9 @@
   display: block;
   margin-top: 1.5rem;
   text-align: center;
-  font-size: 0.9375rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  color: #1565c0;
+  color: #0069a3;
   text-decoration: none;
 }
 
@@ -136,14 +140,14 @@
 }
 
 .registro {
-  margin-top: 1rem;
+  margin-top: 0.65rem;
   text-align: center;
-  font-size: 0.9375rem;
+  font-size: 0.85rem;
   color: #333;
 }
 
 .registro a {
-  color: #1565c0;
+  color: #0069a3;
   font-weight: 500;
   text-decoration: none;
 }
@@ -152,7 +156,6 @@
   text-decoration: underline;
 }
 
-/* FAB amarillo — esquina inferior derecha */
 .fab-home {
   position: fixed;
   bottom: 1.5rem;
@@ -161,8 +164,8 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: #ffeb3b;
-  color: #fff;
+  background: #f4d73b;
+  color: #0069a3;
   display: flex;
   align-items: center;
   justify-content: center;

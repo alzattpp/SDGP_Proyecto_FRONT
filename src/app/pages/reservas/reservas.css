@@ -8,7 +8,7 @@
   display: flex;
   flex-direction: column;
   font-family: 'Roboto', system-ui, sans-serif;
-  background: #fafafa;
+  background: #ffffff;
   color: #111;
 }
 
@@ -20,7 +20,7 @@
   gap: 1rem;
   min-height: 72px;
   padding: 0 clamp(1rem, 4vw, 3rem);
-  background: #062a52;
+  background: #0069a3;
   flex-shrink: 0;
 }
 
@@ -75,7 +75,7 @@
 }
 
 .nav-item--active {
-  color: #ffeb3b;
+  color: #f4d73b;
   font-weight: 600;
 }
 
@@ -123,7 +123,7 @@
 .hero-bg {
   position: absolute;
   inset: -12px;
-  background: url('/assets/hero-reservas.png') no-repeat center center;
+  background: url('/assets/paseo-estudiantes.png') no-repeat center center;
   background-size: cover;
   filter: blur(6px);
   transform: scale(1.06);
@@ -132,7 +132,7 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(6, 42, 82, 0.35);
+  background: rgba(0, 105, 163, 0.35);
   pointer-events: none;
 }
 
@@ -146,7 +146,7 @@
   margin: 0;
   font-size: clamp(1.75rem, 4.5vw, 2.5rem);
   font-weight: 700;
-  color: #ffeb3b;
+  color: #f4d73b;
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
 }
 
@@ -173,10 +173,11 @@
 .panel {
   flex: 1 1 320px;
   max-width: 540px;
-  background: #ececec;
+  background: #ffffff;
   border-radius: 16px;
   padding: clamp(1.5rem, 3vw, 2rem);
-  box-shadow: 0 4px 20px rgba(6, 42, 82, 0.08);
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
 .panel--form {
@@ -187,43 +188,55 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 5px;
 }
 
 .field label {
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: #111;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #556b82;
+  text-align: left;
 }
 
 .field input,
 .field select {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 10px 0;
   border: none;
-  border-radius: 10px;
-  background: #d8d8d8;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: 0;
+  background: transparent;
   font-family: inherit;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   color: #222;
   outline: none;
-  transition: box-shadow 0.2s ease, background 0.2s ease;
+  transition: border-color 0.2s ease;
+}
+
+.field input[type='date'],
+.field input[type='time'] {
+  min-height: 2.5rem;
+  color-scheme: light;
 }
 
 .field input::placeholder {
-  color: #777;
+  color: #b0b0b0;
 }
 
 .field input:focus,
 .field select:focus {
-  background: #d0d0d0;
-  box-shadow: 0 0 0 2px rgba(6, 42, 82, 0.35);
+  border-bottom-color: #0069a3;
+}
+
+.field input[readonly] {
+  color: #444;
+  cursor: default;
 }
 
 .field select {
@@ -232,23 +245,23 @@
 }
 
 .btn-submit {
-  align-self: center;
-  margin-top: 0.5rem;
-  min-width: 180px;
-  padding: 0.8rem 2rem;
+  align-self: stretch;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 12px 1rem;
   border: none;
-  border-radius: 10px;
-  background: #062a52;
+  border-radius: 8px;
+  background: #0069a3;
   color: #fff;
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
+  transition: opacity 0.2s ease, transform 0.15s ease;
 }
 
 .btn-submit:hover {
-  background: #0a3d6b;
+  opacity: 0.92;
 }
 
 .btn-submit:active {
@@ -259,20 +272,20 @@
   display: block;
   width: 100%;
   margin-top: 1.25rem;
-  padding: 0.75rem 1rem;
+  padding: 12px 1rem;
   text-align: center;
   text-decoration: none;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #062a52;
-  background: #e3f2fd;
-  border-radius: 10px;
-  border: 1px solid #90caf9;
-  transition: background 0.2s ease;
+  color: #0069a3;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #0069a3;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .btn-ver-lista:hover {
-  background: #bbdefb;
+  background: rgba(0, 105, 163, 0.06);
 }
 
 @media (max-width: 768px) {

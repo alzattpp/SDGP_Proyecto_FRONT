@@ -19,7 +19,7 @@
   gap: 1rem;
   min-height: 72px;
   padding: 0 clamp(1rem, 4vw, 3rem);
-  background: #00508f;
+  background: #0069a3;
   flex-shrink: 0;
 }
 
@@ -73,7 +73,7 @@
 }
 
 .nav-item--active {
-  color: #ffeb3b;
+  color: #f4d73b;
   font-weight: 700;
 }
 
@@ -116,7 +116,7 @@
   margin: 0 0 1.25rem;
   font-size: clamp(1.75rem, 4vw, 2.35rem);
   font-weight: 700;
-  color: #ffd700;
+  color: #f4d73b;
   text-align: center;
 }
 
@@ -183,7 +183,7 @@
 }
 
 .icon-btn--edit {
-  background: #ffd700;
+  background: #f4d73b;
   color: #333;
 }
 
@@ -198,7 +198,7 @@
 }
 
 .link-back {
-  color: #00508f;
+  color: #0069a3;
   font-weight: 500;
   text-decoration: none;
 }
@@ -233,7 +233,7 @@
   margin: 0 0 1.25rem;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #00508f;
+  color: #0069a3;
   text-align: center;
 }
 
@@ -269,7 +269,7 @@
 .modal-field input:focus,
 .modal-field select:focus {
   outline: none;
-  border-color: #00508f;
+  border-color: #0069a3;
   background: #fff;
 }
 
@@ -279,7 +279,7 @@
   padding: 0.55rem 1.75rem;
   border: none;
   border-radius: 6px;
-  background: #ffd700;
+  background: #f4d73b;
   color: #fff;
   font-family: inherit;
   font-size: 0.9375rem;

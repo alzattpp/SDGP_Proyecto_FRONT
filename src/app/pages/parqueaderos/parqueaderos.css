@@ -19,7 +19,7 @@
   gap: 1rem;
   min-height: 72px;
   padding: 0 clamp(1rem, 4vw, 3rem);
-  background: #062a52;
+  background: #0069a3;
   flex-shrink: 0;
 }
 
@@ -73,7 +73,7 @@
 }
 
 .nav-item--active {
-  color: #ffeb3b !important;
+  color: #f4d73b !important;
   font-weight: 600;
 }
 
@@ -132,7 +132,7 @@
   margin: 0 0 0.65rem;
   font-size: clamp(1.15rem, 2.2vw, 1.4rem);
   font-weight: 700;
-  color: #062a52;
+  color: #0069a3;
 }
 
 .lot-line {
@@ -171,7 +171,7 @@
 }
 
 .stat-pill {
-  background: #ffeb3b;
+  background: #f4d73b;
   border-radius: 14px;
   padding: 1rem 1.25rem;
   min-width: 160px;

@@ -20,7 +20,7 @@
   gap: 1rem;
   min-height: 72px;
   padding: 0 clamp(1rem, 4vw, 3rem);
-  background: #006994;
+  background: #0069a3;
   flex-shrink: 0;
 }
 
@@ -74,7 +74,7 @@
 }
 
 .nav-item--active {
-  color: #fcd116;
+  color: #f4d73b;
   font-weight: 600;
   pointer-events: none;
 }
@@ -120,7 +120,7 @@
   margin: 0;
   font-size: clamp(1.5rem, 3.5vw, 2rem);
   font-weight: 700;
-  color: #fcd116;
+  color: #f4d73b;
 }
 
 .btn {
@@ -130,7 +130,7 @@
   padding: 0.65rem 1.35rem;
   border: none;
   border-radius: 9px;
-  background: #006994;
+  background: #0069a3;
   color: #fff;
   font-family: inherit;
   font-size: 0.9375rem;
@@ -142,7 +142,7 @@
 }
 
 .btn:hover {
-  background: #005a7a;
+  background: #0069a3;
 }
 
 .btn:active {
@@ -238,19 +238,19 @@
 .plate-card {
   min-width: 140px;
   padding: 1rem 1.25rem;
-  background: #ffeb3b;
+  background: #f4d73b;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  box-shadow: 0 2px 10px rgba(0, 105, 148, 0.12);
+  box-shadow: 0 2px 10px rgba(0, 105, 163, 0.12);
 }
 
 .plate-id,
 .plate-brand {
   font-size: 0.9375rem;
   font-weight: 700;
-  color: #006994;
+  color: #0069a3;
 }
 
 .site-footer {
