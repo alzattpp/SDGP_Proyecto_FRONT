@@ -1,9 +1,10 @@
 <div class="page">
   <header class="navbar">
-    <a routerLink="/principal" class="brand" aria-label="Inicio">
+    <a routerLink="/principal" class="brand" aria-label="Inicio SDGP UAM">
       <span class="brand-mark">
         <img src="/assets/logo.png" alt="" width="48" height="48" />
       </span>
+      <span class="brand-text">SDGP UAM</span>
     </a>
 
     <nav class="nav-links" aria-label="Principal">
@@ -14,7 +15,13 @@
         [routerLinkActiveOptions]="{ exact: true }"
         >Parqueaderos</a
       >
-      <a routerLink="/principal" class="nav-item">Pagos</a>
+      <a
+        routerLink="/pagos"
+        class="nav-item"
+        routerLinkActive="nav-item--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Pagos</a
+      >
       <a routerLink="/reservas" class="nav-item">Reservas</a>
       <a
         routerLink="/perfil"
@@ -35,29 +42,32 @@
   </header>
 
   <div class="toolbar">
-    <h1 class="greeting">Hola, Usuario</h1>
-    <a href="#" class="btn btn--toolbar">Medios de pago</a>
+    <h1 class="greeting">Hola, {{ nombrePerfil }}</h1>
+    <div class="toolbar-actions">
+      <button type="button" class="btn btn--toolbar" (click)="openMedios()">Medios de pago</button>
+      <button type="button" class="btn btn--toolbar" (click)="openEditar()">Editar datos</button>
+      <button type="button" class="btn btn--toolbar" (click)="openPlaca()">Registrar placa</button>
+    </div>
   </div>
 
   <main class="main-wrap">
     <div class="profile-card">
       <section class="profile-section">
         <div class="section-head">
-          <h2 class="section-title">Información</h2>
-          <button type="button" class="btn">Editar datos</button>
+          <h2 class="section-title section-title--accent">Información</h2>
         </div>
         <dl class="data-list">
           <div class="data-row">
             <dt>Nombre</dt>
-            <dd>Usuario</dd>
+            <dd>{{ nombrePerfil }}</dd>
           </div>
           <div class="data-row">
             <dt>Documento</dt>
-            <dd>5555555555</dd>
+            <dd>{{ documentoPerfil }}</dd>
           </div>
           <div class="data-row">
             <dt>Tipo</dt>
-            <dd>Institucional</dd>
+            <dd>{{ tipoPerfil }}</dd>
           </div>
         </dl>
       </section>
@@ -65,7 +75,7 @@
       <hr class="divider" />
 
       <section class="profile-section">
-        <h2 class="section-title">Historial</h2>
+        <h2 class="section-title section-title--accent">Historial</h2>
         <dl class="data-list">
           <div class="data-row">
             <dt>Número de usos del servicio</dt>
@@ -82,18 +92,15 @@
 
       <section class="profile-section">
         <div class="section-head section-head--plates">
-          <h2 class="section-title">Placas registradas</h2>
-          <button type="button" class="btn">Registrar Placa +</button>
+          <h2 class="section-title section-title--accent">Placas registradas</h2>
         </div>
         <div class="plates">
-          <article class="plate-card">
-            <span class="plate-id">AAA-000</span>
-            <span class="plate-brand">MAZDA</span>
-          </article>
-          <article class="plate-card">
-            <span class="plate-id">ABC-123</span>
-            <span class="plate-brand">BMW</span>
-          </article>
+          @for (p of placas; track p.id) {
+            <article class="plate-card">
+              <span class="plate-id">{{ p.placa }}</span>
+              <span class="plate-brand">{{ p.marca }}</span>
+            </article>
+          }
         </div>
       </section>
     </div>
@@ -101,3 +108,110 @@
 
   <footer class="site-footer"></footer>
 </div>
+
+@if (modalMedios) {
+  <div class="modal-backdrop" role="presentation" (click)="closeMedios()"></div>
+  <div
+    class="modal modal--wide"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="mediosVista === 'lista' ? 'medios-title' : 'medios-anadir-title'"
+    (click)="$event.stopPropagation()"
+  >
+    @if (mediosVista === 'lista') {
+      <h2 id="medios-title" class="modal-title modal-title--page">Medios de pago</h2>
+      <div class="modal-card">
+        <div class="modal-section-head">
+          <h3 class="modal-section-title">Información</h3>
+          <button type="button" class="btn btn--sm" (click)="irAnadirMedio()">Agregar +</button>
+        </div>
+        <dl class="modal-data">
+          <div class="modal-data-row">
+            <dt>Nombre</dt>
+            <dd>{{ nombrePerfil }}</dd>
+          </div>
+          <div class="modal-data-row">
+            <dt>Documento</dt>
+            <dd>{{ documentoPerfil }}</dd>
+          </div>
+          <div class="modal-data-row">
+            <dt>Tipo</dt>
+            <dd>{{ tipoPerfil }}</dd>
+          </div>
+        </dl>
+        <hr class="modal-divider" />
+        <h3 class="modal-section-title">Registrados</h3>
+        <div class="medios-grid">
+          @for (m of mediosPago; track m.id) {
+            <article class="medio-card">
+              <span class="medio-detalle">{{ m.detalle }}</span>
+              <span class="medio-tipo">{{ m.tipo }}</span>
+            </article>
+          }
+        </div>
+      </div>
+    } @else {
+      <h2 id="medios-anadir-title" class="modal-title">Añadir Medio de pago</h2>
+      <form class="modal-form" (submit)="$event.preventDefault(); guardarMedio()">
+        <div class="modal-field">
+          <label for="mp-tipo">Tipo</label>
+          <input id="mp-tipo" name="tipo" [(ngModel)]="tipoMedio" type="text" placeholder="Ej. VISA, PSE" autocomplete="off" />
+        </div>
+        <div class="modal-field">
+          <label for="mp-nombre">Nombre</label>
+          <input id="mp-nombre" name="nombre" [(ngModel)]="nombreTitularMedio" type="text" autocomplete="name" />
+        </div>
+        <div class="modal-field">
+          <label for="mp-nr">Nrº</label>
+          <input id="mp-nr" name="nr" [(ngModel)]="numeroMedio" type="text" autocomplete="off" />
+        </div>
+        <div class="modal-field">
+          <label for="mp-cvv">CVV</label>
+          <input id="mp-cvv" name="cvv" [(ngModel)]="cvvMedio" type="password" autocomplete="off" maxlength="4" />
+        </div>
+        <button type="submit" class="btn btn--yellow">Añadir</button>
+        <button type="button" class="btn btn--link" (click)="volverListaMedios()">Volver</button>
+      </form>
+    }
+  </div>
+}
+
+@if (modalEditar) {
+  <div class="modal-backdrop" role="presentation" (click)="closeEditar()"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editar-title" (click)="$event.stopPropagation()">
+    <h2 id="editar-title" class="modal-title">Editar datos</h2>
+    <form class="modal-form" (submit)="$event.preventDefault(); guardarPerfil()">
+      <div class="modal-field">
+        <label for="pf-nombre">Nombre</label>
+        <input id="pf-nombre" [(ngModel)]="editNombre" name="editNombre" type="text" />
+      </div>
+      <div class="modal-field">
+        <label for="pf-doc">Documento</label>
+        <input id="pf-doc" [(ngModel)]="editDocumento" name="editDocumento" type="text" />
+      </div>
+      <div class="modal-field">
+        <label for="pf-tipo">Tipo</label>
+        <input id="pf-tipo" [(ngModel)]="editTipo" name="editTipo" type="text" />
+      </div>
+      <button type="submit" class="btn btn--yellow">Guardar</button>
+    </form>
+  </div>
+}
+
+@if (modalPlaca) {
+  <div class="modal-backdrop" role="presentation" (click)="closePlaca()"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="placa-title" (click)="$event.stopPropagation()">
+    <h2 id="placa-title" class="modal-title">Registrar placa</h2>
+    <form class="modal-form" (submit)="$event.preventDefault(); guardarPlaca()">
+      <div class="modal-field">
+        <label for="pl-placa">Placa</label>
+        <input id="pl-placa" [(ngModel)]="nuevaPlaca" name="nuevaPlaca" type="text" placeholder="Ej. ABC-123" autocomplete="off" />
+      </div>
+      <div class="modal-field">
+        <label for="pl-marca">Marca</label>
+        <input id="pl-marca" [(ngModel)]="nuevaMarca" name="nuevaMarca" type="text" placeholder="Ej. MAZDA" autocomplete="off" />
+      </div>
+      <button type="submit" class="btn btn--yellow">Registrar</button>
+    </form>
+  </div>
+}

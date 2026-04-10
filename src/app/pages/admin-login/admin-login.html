@@ -1,0 +1,31 @@
+<div class="page" aria-labelledby="admin-login-title">
+  <div class="bg" aria-hidden="true"></div>
+  <div class="overlay" aria-hidden="true"></div>
+
+  <main class="card">
+    <img src="/assets/logo.png" alt="SDGP UAM" class="logo" width="200" height="auto" />
+    <h1 id="admin-login-title" class="sr-only">Login administrador</h1>
+
+    <form class="form" (submit)="$event.preventDefault()">
+      <div class="field">
+        <label for="admin-correo">Correo</label>
+        <input
+          id="admin-correo"
+          type="email"
+          autocomplete="email"
+          placeholder="Ingresa tu correo"
+        />
+      </div>
+      <div class="field">
+        <label for="admin-pass">Contraseña</label>
+        <input
+          id="admin-pass"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Ingresa tu contraseña"
+        />
+      </div>
+      <a routerLink="/admin/perfil" class="btn-ingresar">Ingresar</a>
+    </form>
+  </main>
+</div>

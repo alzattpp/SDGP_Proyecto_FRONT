@@ -1,0 +1,74 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Roboto', system-ui, sans-serif;
+  background: #fff;
+  color: #111;
+}
+
+.main {
+  flex: 1;
+  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 3rem) 3rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-title {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  font-weight: 700;
+  color: #5eb3e8;
+  letter-spacing: 0.02em;
+}
+
+.table-border {
+  border: 2px solid #0069a3;
+  border-radius: 12px;
+  overflow-x: auto;
+  background: #fff;
+}
+
+.data-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  color: #1a2d5c;
+  background: #fafafa;
+}
+
+.data-table td {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e8e8e8;
+  color: #222;
+  vertical-align: middle;
+}
+
+.btn-ver {
+  padding: 0.4rem 1.1rem;
+  border: none;
+  border-radius: 999px;
+  background: #f2d03b;
+  color: #1a1a1a;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-ver:hover {
+  filter: brightness(0.97);
+}

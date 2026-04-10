@@ -1,0 +1,274 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Roboto', system-ui, sans-serif;
+  background: #f0f0f0;
+  color: #1a1a1a;
+}
+
+.main {
+  flex: 1;
+  padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 4vw, 3rem) 2.5rem;
+  max-width: 920px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.welcome {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.65rem, 4vw, 2.35rem);
+  font-weight: 700;
+  color: #f2d03b;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+.panel {
+  background: #e8e8e8;
+  border-radius: 16px;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.block-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.block-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0069a3;
+}
+
+.block-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn--blue {
+  background: #0069a3;
+  color: #fff;
+}
+
+.btn--yellow {
+  background: #f2d03b;
+  color: #0069a3;
+}
+
+.data {
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(100px, 160px) 1fr;
+  gap: 0.5rem 1.25rem;
+  margin-bottom: 0.55rem;
+  font-size: 0.9375rem;
+}
+
+.row dt {
+  margin: 0;
+  font-weight: 600;
+  color: #333;
+}
+
+.row dd {
+  margin: 0;
+  color: #222;
+}
+
+.divider {
+  border: none;
+  height: 1px;
+  background: #c4c4c4;
+  margin: 1.25rem 0;
+}
+
+.acceso-val {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.footer-act {
+  margin-top: 1.75rem;
+}
+
+.btn-reportar {
+  padding: 0.85rem 1.75rem;
+  border: none;
+  border-radius: 12px;
+  background: #f2d03b;
+  color: #0069a3;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-reportar:hover {
+  filter: brightness(0.97);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.modal {
+  position: fixed;
+  z-index: 1001;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 400px);
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+.modal--wide {
+  width: min(92vw, 480px);
+  max-height: min(90vh, 620px);
+  overflow-y: auto;
+}
+
+.modal-h {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0069a3;
+  text-align: center;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.mf {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #556b82;
+}
+
+.mf input {
+  padding: 0.5rem 0;
+  border: none;
+  border-bottom: 2px solid #b8d4e8;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  outline: none;
+}
+
+.mf input:focus {
+  border-bottom-color: #0069a3;
+}
+
+.mf select {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #b8d4e8;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  background: #f8fafc;
+}
+
+.mf textarea {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #b8d4e8;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  resize: vertical;
+  min-height: 96px;
+}
+
+.mf textarea:focus {
+  outline: none;
+  border-color: #0069a3;
+  box-shadow: 0 0 0 1px rgba(0, 105, 163, 0.25);
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: flex-end;
+  margin-top: 0.35rem;
+}
+
+.modal-btn {
+  padding: 0.55rem 1.25rem;
+  border-radius: 10px;
+  border: none;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modal-btn--primary {
+  background: #f2d03b;
+  color: #0069a3;
+}
+
+.modal-btn--ghost {
+  background: #eef2f6;
+  color: #0069a3;
+}
+
+.reporte-ok {
+  margin: 0 0 1.25rem;
+  line-height: 1.55;
+  color: #333;
+  font-size: 0.9375rem;
+}
+
+.modal-ok {
+  margin-top: 0.5rem;
+  align-self: center;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  background: #f2d03b;
+  color: #0069a3;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

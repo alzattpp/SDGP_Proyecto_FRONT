@@ -5,12 +5,41 @@ import { ParqueaderosComponent } from './pages/parqueaderos/parqueaderos';
 import { ReservasComponent } from './pages/reservas/reservas';
 import { VerReservasComponent } from './pages/ver-reservas/ver-reservas';
 import { PerfilComponent } from './pages/perfil/perfil';
+import { PagosComponent } from './pages/pagos/pagos';
+import { ParqueaderosVisitantesComponent } from './pages/parqueaderos-visitantes/parqueaderos-visitantes';
+import { TrabajadorInicioComponent } from './pages/trabajador-inicio/trabajador-inicio';
+import { GestionComponent } from './pages/gestion/gestion';
+import { ReservasTrabajadorComponent } from './pages/reservas-trabajador/reservas-trabajador';
+import { PagosTrabajadorComponent } from './pages/pagos-trabajador/pagos-trabajador';
+import { PerfilTrabajadorComponent } from './pages/perfil-trabajador/perfil-trabajador';
+import { AdminLoginComponent } from './pages/admin-login/admin-login';
+import { AdminPerfilComponent } from './pages/admin-perfil/admin-perfil';
+import { AdminParqueaderosComponent } from './pages/admin-parqueaderos/admin-parqueaderos';
+import { AdminTrabajadoresComponent } from './pages/admin-trabajadores/admin-trabajadores';
+import { AdminReservasComponent } from './pages/admin-reservas/admin-reservas';
+import { AdminPagosComponent } from './pages/admin-pagos/admin-pagos';
+import { AdminReportesComponent } from './pages/admin-reportes/admin-reportes';
 
 export const routes: Routes = [
   { path: '', component: InicioComponent },
   { path: 'principal', component: PrincipalComponent },
+  { path: 'pagos', component: PagosComponent },
   { path: 'parqueaderos', component: ParqueaderosComponent },
+  { path: 'parqueaderos-visitantes', component: ParqueaderosVisitantesComponent },
   { path: 'reservas', component: ReservasComponent },
   { path: 'ver-reservas', component: VerReservasComponent },
   { path: 'perfil', component: PerfilComponent },
+  { path: 'trabajador', component: TrabajadorInicioComponent },
+  { path: 'gestion', component: GestionComponent },
+  { path: 'trabajador/reservas', component: ReservasTrabajadorComponent },
+  { path: 'trabajador/pagos', component: PagosTrabajadorComponent },
+  { path: 'trabajador/perfil', component: PerfilTrabajadorComponent },
+  { path: 'admin', redirectTo: 'admin/perfil', pathMatch: 'full' },
+  { path: 'admin/login', component: AdminLoginComponent },
+  { path: 'admin/perfil', component: AdminPerfilComponent },
+  { path: 'admin/parqueaderos', component: AdminParqueaderosComponent },
+  { path: 'admin/trabajadores', component: AdminTrabajadoresComponent },
+  { path: 'admin/reservas', component: AdminReservasComponent },
+  { path: 'admin/pagos', component: AdminPagosComponent },
+  { path: 'admin/reportes', component: AdminReportesComponent },
 ];

@@ -1,0 +1,139 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Roboto', system-ui, sans-serif;
+  background: #fff;
+  color: #1a1a1a;
+}
+
+.hero {
+  position: relative;
+  min-height: min(52vh, 520px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.25rem, 5vw, 3rem);
+  background: #0069a3 url('/assets/hero-principal-cupula.png') no-repeat center center;
+  background-size: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 105, 163, 0.55);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 920px;
+  text-align: center;
+}
+
+.hero-title {
+  margin: 0 0 1.25rem;
+  font-size: clamp(2rem, 5.5vw, 3.25rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #f2d03b;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+}
+
+.hero-text {
+  margin: 0;
+  font-size: clamp(0.9375rem, 2vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.65;
+  color: #f2d03b;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  padding: clamp(2.5rem, 5vw, 4rem) clamp(1.25rem, 4vw, 3rem) clamp(3rem, 6vw, 4.5rem);
+  background: #fff;
+  flex: 1;
+}
+
+.card {
+  flex: 1 1 280px;
+  max-width: 420px;
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  background: #f2d03b;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 8px 28px rgba(0, 105, 163, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-title {
+  margin: 0 0 1rem;
+  font-size: clamp(1.35rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+  color: #0069a3;
+}
+
+.card-desc {
+  margin: 0 0 1.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #1a2744;
+  flex: 1;
+}
+
+.card-btn {
+  display: inline-block;
+  width: 100%;
+  max-width: 240px;
+  padding: 0.75rem 1.25rem;
+  background: #0069a3;
+  color: #fff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  text-align: center;
+  transition: filter 0.2s ease, transform 0.15s ease;
+}
+
+.card-btn:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.site-footer {
+  position: relative;
+  min-height: 56px;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.footer-accent {
+  position: absolute;
+  right: clamp(1rem, 4vw, 2rem);
+  bottom: 1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f2d03b;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 480px) {
+  .hero {
+    min-height: 400px;
+  }
+}

@@ -1,0 +1,34 @@
+<div class="page">
+  <app-trabajador-navbar />
+
+  <main class="main">
+    <h1 class="page-title">Pagos</h1>
+
+    <div class="table-border">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Placa</th>
+            <th>Hora de pago</th>
+            <th>Estado</th>
+            <th>Medio</th>
+            <th>Detalles</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of filas; track p.placa + p.horaPago) {
+            <tr>
+              <td>{{ p.placa }}</td>
+              <td>{{ p.horaPago }}</td>
+              <td>{{ p.estado }}</td>
+              <td>{{ p.medio }}</td>
+              <td>
+                <button type="button" class="btn-ver" (click)="verDetalle(p)">Ver</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>

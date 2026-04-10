@@ -1,0 +1,159 @@
+<div class="page">
+  <header class="navbar">
+    <a routerLink="/principal" class="brand" aria-label="Inicio SDGP UAM">
+      <span class="brand-mark">
+        <img src="/assets/logo.png" alt="" width="48" height="48" />
+      </span>
+      <span class="brand-text">SDGP UAM</span>
+    </a>
+
+    <nav class="nav-links" aria-label="Principal">
+      <a
+        routerLink="/parqueaderos"
+        class="nav-item"
+        routerLinkActive="nav-item--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Parqueaderos</a
+      >
+      <a
+        routerLink="/pagos"
+        class="nav-item"
+        routerLinkActive="nav-item--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Pagos</a
+      >
+      <a routerLink="/reservas" class="nav-item">Reservas</a>
+      <a routerLink="/perfil" class="nav-item">Mi Perfil</a>
+    </nav>
+
+    <button type="button" class="avatar" aria-label="Cuenta de usuario">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        />
+      </svg>
+    </button>
+  </header>
+
+  <main class="main">
+    <h1 class="page-title">PAGO SERVICIO</h1>
+
+    <div class="pagos-layout">
+      <section class="panel panel--form" aria-label="Datos del pago">
+        <div class="field">
+          <label for="pago-placa">Ingrese Nr° Placa</label>
+          <input id="pago-placa" name="placa" [(ngModel)]="placa" type="text" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="pago-fecha">Fecha</label>
+          <input id="pago-fecha" name="fecha" [(ngModel)]="fecha" type="text" placeholder="dd/mm/aaaa" />
+        </div>
+        <div class="field">
+          <label for="pago-hora">Hora</label>
+          <input id="pago-hora" name="hora" [(ngModel)]="hora" type="text" placeholder="--:--" />
+        </div>
+        <div class="field">
+          <label for="pago-valor">Valor a Pagar</label>
+          <input id="pago-valor" name="valor" [(ngModel)]="valorForm" type="text" placeholder="Ej. 3600" inputmode="numeric" />
+        </div>
+        <div class="field field--medio">
+          <div class="field-medio-head">
+            <label for="pago-medio">Medio de pago</label>
+            <button type="button" class="btn-add-medio" (click)="toggleFormMedio()">+ Añadir medio de pago</button>
+          </div>
+          @if (mediosRegistrados.length) {
+            <div class="field field--guardados">
+              <select
+                id="pago-medio-guardado"
+                name="medioGuardado"
+                [(ngModel)]="medioGuardadoId"
+                (ngModelChange)="aplicarMedioGuardado()"
+              >
+                <option value="">Seleccione…</option>
+                @for (m of mediosRegistrados; track m.id) {
+                  <option [value]="m.id">{{ m.tipo }} — {{ m.detalle }}</option>
+                }
+              </select>
+            </div>
+          }
+          
+          @if (mostrarFormMedio) {
+            <div class="inline-medio-form" (click)="$event.stopPropagation()">
+              <p class="inline-medio-form__title">Añadir medio de pago</p>
+              <form class="inline-medio-form__grid" (submit)="$event.preventDefault(); guardarMedioRegistrado()">
+                <div class="inline-field">
+                  <label for="nm-tipo">Tipo</label>
+                  <input id="nm-tipo" name="nuevoTipo" [(ngModel)]="nuevoTipoMedio" type="text" placeholder="Ej. VISA, PSE" />
+                </div>
+                <div class="inline-field">
+                  <label for="nm-nombre">Nombre</label>
+                  <input id="nm-nombre" name="nuevoNombre" [(ngModel)]="nuevoNombreMedio" type="text" />
+                </div>
+                <div class="inline-field">
+                  <label for="nm-nr">Nrº</label>
+                  <input id="nm-nr" name="nuevoNr" [(ngModel)]="nuevoNrMedio" type="text" />
+                </div>
+                <div class="inline-field">
+                  <label for="nm-cvv">CVV</label>
+                  <input id="nm-cvv" name="nuevoCvv" [(ngModel)]="nuevoCvvMedio" type="password" maxlength="4" autocomplete="off" />
+                </div>
+                <div class="inline-medio-form__actions">
+                  <button type="submit" class="btn-inline-anadir">Añadir</button>
+                  <button type="button" class="btn-inline-cancelar" (click)="mostrarFormMedio = false">Cerrar</button>
+                </div>
+              </form>
+            </div>
+          }
+        </div>
+      </section>
+
+      <aside class="pagos-aside" aria-label="Resumen y medios aceptados">
+        <div class="resumen-card">
+          <p class="resumen-label">Valor a pagar:</p>
+          <div class="resumen-monto">${{ valorMostrar | number : '1.0-0' }}</div>
+          <button type="button" class="btn-efectuar" (click)="efectuarPago()">Efectuar Pago</button>
+        </div>
+
+        <div class="medios-card">
+          <h2 class="medios-card-title">Medios de pago</h2>
+          <div class="medios-imagen-wrap">
+            <img
+              src="/assets/pagos.png"
+              alt="Logos de medios de pago aceptados: Visa, Mastercard, PSE, bancos y otros"
+              class="medios-imagen"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="historial" aria-labelledby="historial-title">
+      <h2 id="historial-title" class="historial-title">Historial de pagos realizados</h2>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Placa</th>
+              <th>Valor (COP)</th>
+              <th>Medio</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (h of historial; track h.id) {
+              <tr>
+                <td>{{ h.fecha }}</td>
+                <td>{{ h.hora }}</td>
+                <td>{{ h.placa }}</td>
+                <td>{{ h.valor | number : '1.0-0' }}</td>
+                <td>{{ h.medio }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>

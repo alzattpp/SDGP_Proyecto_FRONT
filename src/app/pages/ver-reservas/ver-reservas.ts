@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -10,11 +11,12 @@ export interface Reserva {
   parqueadero: string;
   hora: string;
   fecha: string;
+  estadoPago: 'Pendiente' | 'Pagado';
 }
 
 @Component({
   selector: 'app-ver-reservas',
-  imports: [RouterLink, RouterLinkActive, FormsModule],
+  imports: [RouterLink, RouterLinkActive, FormsModule, DecimalPipe],
   templateUrl: './ver-reservas.html',
   styleUrl: './ver-reservas.css',
 })
@@ -28,6 +30,8 @@ export class VerReservasComponent {
     'Parqueadero Norte',
   ];
 
+  readonly valorReservaCOP = 8000;
+
   reservas: Reserva[] = [
     {
       id: '1',
@@ -36,6 +40,7 @@ export class VerReservasComponent {
       parqueadero: 'Biblioteca',
       hora: '10:40 AM',
       fecha: '19/02/2026',
+      estadoPago: 'Pendiente',
     },
   ];
 
@@ -45,6 +50,10 @@ export class VerReservasComponent {
   editPlaca = '';
   editParqueadero = '';
   editHora = '';
+
+  pagoOpen = false;
+  private pagoReservaId: string | null = null;
+  metodoPago = 'Tarjeta';
 
   navReservasActivo(): boolean {
     const p = this.router.url.split('?')[0];
@@ -86,7 +95,7 @@ export class VerReservasComponent {
     await Swal.fire({
       title: 'Reserva editada correctamente',
       confirmButtonText: 'ACEPTAR',
-      confirmButtonColor: '#FFD700',
+      confirmButtonColor: '#f4d73b',
       color: '#1a2d4d',
     });
   }
@@ -98,7 +107,7 @@ export class VerReservasComponent {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#e53935',
-      cancelButtonColor: '#00508f',
+      cancelButtonColor: '#0069a3',
       confirmButtonText: 'Eliminar',
       cancelButtonText: 'Cancelar',
       reverseButtons: true,
@@ -112,7 +121,43 @@ export class VerReservasComponent {
       title: 'Reserva eliminada',
       icon: 'success',
       confirmButtonText: 'ACEPTAR',
-      confirmButtonColor: '#FFD700',
+      confirmButtonColor: '#f4d73b',
+      color: '#1a2d4d',
+    });
+  }
+
+  reservaEnPago: Reserva | null = null;
+
+  openPago(r: Reserva): void {
+    if (r.estadoPago === 'Pagado') return;
+    this.pagoReservaId = r.id;
+    this.reservaEnPago = r;
+    this.metodoPago = 'Tarjeta';
+    this.pagoOpen = true;
+  }
+
+  closePago(): void {
+    this.pagoOpen = false;
+    this.pagoReservaId = null;
+    this.reservaEnPago = null;
+  }
+
+  async confirmarPago(): Promise<void> {
+    const id = this.pagoReservaId;
+    if (!id) return;
+
+    this.reservas = this.reservas.map((row) =>
+      row.id === id ? { ...row, estadoPago: 'Pagado' as const } : row,
+    );
+
+    this.closePago();
+
+    await Swal.fire({
+      title: 'Pago registrado',
+      text: 'La reserva quedó pagada.',
+      icon: 'success',
+      confirmButtonText: 'ACEPTAR',
+      confirmButtonColor: '#f4d73b',
       color: '#1a2d4d',
     });
   }

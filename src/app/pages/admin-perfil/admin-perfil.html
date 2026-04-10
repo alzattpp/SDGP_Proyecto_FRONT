@@ -1,0 +1,130 @@
+<div class="page">
+  <app-admin-navbar />
+
+  <main class="main">
+    <h1 class="welcome">Bienvenido - {{ nombre }}</h1>
+
+    <div class="panel">
+      <section class="block">
+        <div class="block-head">
+          <h2 class="block-title">Información</h2>
+          <div class="block-actions">
+            <button type="button" class="btn btn--blue" (click)="openEditar()">Editar datos</button>
+            <button type="button" class="btn btn--yellow" (click)="openClave()">Cambiar contraseña</button>
+          </div>
+        </div>
+        <dl class="data">
+          <div class="row">
+            <dt>Nombre</dt>
+            <dd>{{ nombre }}</dd>
+          </div>
+          <div class="row">
+            <dt>Documento</dt>
+            <dd>{{ documento }}</dd>
+          </div>
+          <div class="row">
+            <dt>Teléfono</dt>
+            <dd>{{ telefono }}</dd>
+          </div>
+          <div class="row">
+            <dt>Tipo</dt>
+            <dd>{{ tipo }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <hr class="divider" />
+
+      <section class="block">
+        <h2 class="block-title">Ultimo acceso</h2>
+        <p class="acceso-val">{{ ultimoAcceso }}</p>
+      </section>
+
+      <div class="footer-act">
+        <button type="button" class="btn-reportar" (click)="openReporte()">Reportar Problema</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+@if (modalEditar) {
+  <div class="modal-backdrop" role="presentation" (click)="closeEditar()"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ed-title" (click)="$event.stopPropagation()">
+    <h2 id="ed-title" class="modal-h">Editar datos</h2>
+    <form class="modal-form" (submit)="$event.preventDefault(); guardarDatos()">
+      <label class="mf"><span>Nombre</span><input [(ngModel)]="editNombre" name="en" type="text" /></label>
+      <label class="mf"><span>Documento</span><input [(ngModel)]="editDocumento" name="ed" type="text" /></label>
+      <label class="mf"><span>Teléfono</span><input [(ngModel)]="editTelefono" name="et" type="tel" /></label>
+      <label class="mf"><span>Tipo</span><input [(ngModel)]="editTipo" name="eti" type="text" /></label>
+      <button type="submit" class="modal-ok">Guardar</button>
+    </form>
+  </div>
+}
+
+@if (modalClave) {
+  <div class="modal-backdrop" role="presentation" (click)="closeClave()"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cl-title" (click)="$event.stopPropagation()">
+    <h2 id="cl-title" class="modal-h">Cambiar contraseña</h2>
+    <form class="modal-form" (submit)="$event.preventDefault(); guardarClave()">
+      <label class="mf"><span>Nueva contraseña</span><input [(ngModel)]="nuevaClave" name="nc" type="password" /></label>
+      <label class="mf"><span>Confirmar</span><input [(ngModel)]="repetirClave" name="rc" type="password" /></label>
+      <button type="submit" class="modal-ok">Actualizar</button>
+    </form>
+  </div>
+}
+
+@if (modalReporte) {
+  <div class="modal-backdrop" role="presentation" (click)="closeReporte()"></div>
+  <div class="modal modal--wide" role="dialog" aria-modal="true" aria-labelledby="rep-title" (click)="$event.stopPropagation()">
+    <h2 id="rep-title" class="modal-h">Reportar problema</h2>
+
+    @if (!reporteEnviado) {
+      <form class="modal-form" (submit)="$event.preventDefault(); enviarReporte()">
+        <label class="mf">
+          <span>Categoría</span>
+          <select [(ngModel)]="reporteCategoria" name="rcat">
+            <option>Sistema / acceso</option>
+            <option>Datos incorrectos</option>
+            <option>Parqueaderos / cupos</option>
+            <option>Pagos / facturación</option>
+            <option>Otro</option>
+          </select>
+        </label>
+        <label class="mf">
+          <span>Prioridad</span>
+          <select [(ngModel)]="reportePrioridad" name="rpri">
+            <option>Baja</option>
+            <option>Media</option>
+            <option>Alta</option>
+          </select>
+        </label>
+        <label class="mf mf--full">
+          <span>Describe el problema</span>
+          <textarea
+            [(ngModel)]="reporteDescripcion"
+            name="rdesc"
+            rows="4"
+            placeholder="Ej. No puedo actualizar la capacidad del parqueadero Cupula..."
+          ></textarea>
+        </label>
+        <label class="mf">
+          <span>Correo de contacto (opcional)</span>
+          <input [(ngModel)]="reporteCorreo" name="rmail" type="email" placeholder="tu.correo@uam.edu" />
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn modal-btn--ghost" (click)="closeReporte()">Cancelar</button>
+          <button type="submit" class="modal-btn modal-btn--primary">Enviar reporte</button>
+        </div>
+      </form>
+    } @else {
+      <p class="reporte-ok">
+        Hemos registrado tu reporte en el sistema de soporte. Referencia simulada:
+        <strong>TKT-{{ documento.slice(-4) }}-{{ reporteCategoria === 'Otro' ? 'GEN' : 'ADM' }}</strong>
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn--ghost" (click)="nuevaQueja()">Enviar otro</button>
+        <button type="button" class="modal-btn modal-btn--primary" (click)="closeReporte()">Cerrar</button>
+      </div>
+    }
+  </div>
+}

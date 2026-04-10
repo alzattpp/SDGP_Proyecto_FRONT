@@ -125,6 +125,23 @@
   transform: scale(0.99);
 }
 
+.rol-alt {
+  margin: 1.25rem 0 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.rol-alt__link {
+  color: #0069a3;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.rol-alt__link:hover {
+  text-decoration: underline;
+}
+
 .link-password {
   display: block;
   margin-top: 1.5rem;

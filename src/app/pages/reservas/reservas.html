@@ -1,9 +1,10 @@
 <div class="page">
   <header class="navbar">
-    <a routerLink="/principal" class="brand" aria-label="Inicio">
+    <a routerLink="/principal" class="brand" aria-label="Inicio SDGP UAM">
       <span class="brand-mark">
         <img src="/assets/logo.png" alt="" width="48" height="48" />
       </span>
+      <span class="brand-text">SDGP UAM</span>
     </a>
 
     <nav class="nav-links" aria-label="Principal">
@@ -14,7 +15,13 @@
         [routerLinkActiveOptions]="{ exact: true }"
         >Parqueaderos</a
       >
-      <a routerLink="/principal" class="nav-item">Pagos</a>
+      <a
+        routerLink="/pagos"
+        class="nav-item"
+        routerLinkActive="nav-item--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Pagos</a
+      >
       <a
         routerLink="/reservas"
         class="nav-item"

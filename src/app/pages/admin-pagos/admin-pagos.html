@@ -1,0 +1,93 @@
+<div class="page">
+  <app-admin-navbar />
+
+  <main class="main">
+    <h1 class="page-title">Pagos</h1>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Placa</th>
+            <th>Entrada</th>
+            <th>Salida</th>
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Detalles</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of filas(); track p.placa + p.fecha) {
+            <tr>
+              <td>{{ p.placa }}</td>
+              <td>{{ p.entrada }}</td>
+              <td>{{ p.salida }}</td>
+              <td>{{ p.fecha }}</td>
+              <td>{{ p.total }}</td>
+              <td>
+                <button type="button" class="btn-ver" (click)="abrirDetalle(p)">Ver</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+@if (modalDetalle) {
+  <div class="modal-backdrop" role="presentation" (click)="cerrarDetalle()"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="det-pago-title" (click)="$event.stopPropagation()">
+    <h2 id="det-pago-title" class="modal-title">Detalle del pago</h2>
+    <p class="modal-hint">Revisa o ajusta los campos (simulación).</p>
+    <form class="detalle-form" (submit)="$event.preventDefault(); guardarDetalle()">
+      <div class="form-grid">
+        <label class="fld">
+          <span>Placa</span>
+          <input [(ngModel)]="fPlaca" name="fp" type="text" readonly class="fld--ro" />
+        </label>
+        <label class="fld">
+          <span>Referencia</span>
+          <input [(ngModel)]="fReferencia" name="fref" type="text" />
+        </label>
+        <label class="fld">
+          <span>Entrada</span>
+          <input [(ngModel)]="fEntrada" name="fe" type="text" />
+        </label>
+        <label class="fld">
+          <span>Salida</span>
+          <input [(ngModel)]="fSalida" name="fs" type="text" />
+        </label>
+        <label class="fld">
+          <span>Fecha</span>
+          <input [(ngModel)]="fFecha" name="ff" type="text" />
+        </label>
+        <label class="fld">
+          <span>Total</span>
+          <input [(ngModel)]="fTotal" name="ft" type="text" />
+        </label>
+        <label class="fld fld--full">
+          <span>Medio de pago</span>
+          <select [(ngModel)]="fMedio" name="fm">
+            <option>Nequi</option>
+            <option>PSE</option>
+            <option>Efectivo / taquilla</option>
+            <option>Tarjeta</option>
+          </select>
+        </label>
+        <label class="fld fld--full">
+          <span>Concepto / detalle</span>
+          <textarea [(ngModel)]="fDetalle" name="fd" rows="3"></textarea>
+        </label>
+        <label class="fld fld--full">
+          <span>Notas internas (solo visualización demo)</span>
+          <textarea [(ngModel)]="fNotasAdmin" name="fn" rows="2" placeholder="Ej. Verificado con caja el 19/02/2026"></textarea>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-sec" (click)="cerrarDetalle()">Cerrar sin guardar</button>
+        <button type="submit" class="btn-pri">Guardar cambios</button>
+      </div>
+    </form>
+  </div>
+}

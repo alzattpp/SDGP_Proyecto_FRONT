@@ -1,0 +1,96 @@
+<div class="page">
+  <app-trabajador-navbar [topLabel]="'GESTIÓN DE PARQUEADEROS'" />
+
+  <main class="main">
+    <h1 class="page-heading">{{ nombreParqueadero }} - Gestión</h1>
+
+    <section class="dashboard" aria-label="Resumen y registro">
+      <div class="dashboard-col dashboard-col--form">
+        <p class="stat-line">Capacidad total: {{ capacidadTotal }} parqueaderos</p>
+        <p class="stat-line">Cupos disponibles: {{ cuposDisponibles() }} parqueaderos</p>
+
+        <div class="entrada-box">
+          <label class="sr-only" for="placa-entrada">Placa</label>
+          <input
+            id="placa-entrada"
+            type="text"
+            name="placaEntrada"
+            [(ngModel)]="placaEntrada"
+            placeholder="NAM - 789"
+            autocomplete="off"
+            class="input-placa"
+          />
+          <button type="button" class="btn-entrada" (click)="registrarEntrada()">Registrar Entrada</button>
+        </div>
+      </div>
+
+      <div class="dashboard-col dashboard-col--visual">
+        <img [src]="imagenCarro()" alt="" class="car-illus" width="280" height="120" />
+      </div>
+
+      <div class="dashboard-col dashboard-col--pill">
+        <div class="stat-pill">
+          <div class="stat-row">
+            <span class="stat-label">Ocupación:</span>
+            <span class="stat-value">{{ ocupacionPct() }} %</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Disponibilidad:</span>
+            <span class="stat-value">{{ disponibilidadPct() }} %</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="table-section" aria-labelledby="tabla-registros">
+      <div class="table-toolbar">
+        <h2 id="tabla-registros" class="sr-only">Vehículos en parqueadero</h2>
+        <div class="search-wrap">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input
+            type="search"
+            [(ngModel)]="busqueda"
+            placeholder="Buscar Placa"
+            class="search-input"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <div class="table-border">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Placa</th>
+              <th>Hora de ingreso</th>
+              <th>Estado</th>
+              <th>Salida</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of filtrados(); track r.placa) {
+              <tr>
+                <td>{{ r.placa }}</td>
+                <td>{{ r.horaIngreso }}</td>
+                <td>{{ r.estado }}</td>
+                <td>
+                  <button type="button" class="btn-salida" (click)="abrirSalida(r.placa)">Registrar Salida</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+@if (modalSalidaAbierto()) {
+  <div class="modal-backdrop" role="presentation" (click)="cerrarModal()"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="salida-msg" (click)="$event.stopPropagation()">
+    <p id="salida-msg" class="modal-text">
+      Salida Registrada del vehículo con placas <strong>{{ placaSalidaModal() }}</strong>
+    </p>
+    <button type="button" class="btn-aceptar" (click)="confirmarSalida()">ACEPTAR</button>
+  </div>
+}
