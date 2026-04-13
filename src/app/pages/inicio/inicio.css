@@ -125,6 +125,20 @@
   transform: scale(0.99);
 }
 
+.btn-login:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.mensaje-error {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.875rem;
+  color: #8a1538;
+  background: #fdecef;
+  border-radius: 8px;
+}
+
 .rol-alt {
   margin: 1.25rem 0 0;
   text-align: center;

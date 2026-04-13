@@ -42,7 +42,12 @@
   </header>
 
   <div class="toolbar">
-    <h1 class="greeting">Hola, {{ nombrePerfil }}</h1>
+    <h1 class="greeting">Hola, {{ nombrePerfil() }}</h1>
+    @if (perfilError(); as err) {
+      <p class="perfil-alerta" role="alert">{{ err }}</p>
+    } @else if (perfilCargando()) {
+      <p class="perfil-alerta perfil-alerta--muted">Cargando perfil…</p>
+    }
     <div class="toolbar-actions">
       <button type="button" class="btn btn--toolbar" (click)="openMedios()">Medios de pago</button>
       <button type="button" class="btn btn--toolbar" (click)="openEditar()">Editar datos</button>
@@ -59,15 +64,15 @@
         <dl class="data-list">
           <div class="data-row">
             <dt>Nombre</dt>
-            <dd>{{ nombrePerfil }}</dd>
+            <dd>{{ nombrePerfil() }}</dd>
           </div>
           <div class="data-row">
             <dt>Documento</dt>
-            <dd>{{ documentoPerfil }}</dd>
+            <dd>{{ documentoPerfil() }}</dd>
           </div>
           <div class="data-row">
             <dt>Tipo</dt>
-            <dd>{{ tipoPerfil }}</dd>
+            <dd>{{ tipoPerfil() }}</dd>
           </div>
         </dl>
       </section>
@@ -128,15 +133,15 @@
         <dl class="modal-data">
           <div class="modal-data-row">
             <dt>Nombre</dt>
-            <dd>{{ nombrePerfil }}</dd>
+            <dd>{{ nombrePerfil() }}</dd>
           </div>
           <div class="modal-data-row">
             <dt>Documento</dt>
-            <dd>{{ documentoPerfil }}</dd>
+            <dd>{{ documentoPerfil() }}</dd>
           </div>
           <div class="modal-data-row">
             <dt>Tipo</dt>
-            <dd>{{ tipoPerfil }}</dd>
+            <dd>{{ tipoPerfil() }}</dd>
           </div>
         </dl>
         <hr class="modal-divider" />

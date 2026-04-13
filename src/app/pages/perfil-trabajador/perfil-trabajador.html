@@ -2,7 +2,12 @@
   <app-trabajador-navbar />
 
   <div class="greet-bar">
-    <h1 class="greeting">Hola, Trabajador</h1>
+    <h1 class="greeting">Hola, {{ nombre() }}</h1>
+    @if (perfilError(); as err) {
+      <p class="perfil-alerta" role="alert">{{ err }}</p>
+    } @else if (perfilCargando()) {
+      <p class="perfil-alerta perfil-alerta--muted">Cargando perfil…</p>
+    }
   </div>
 
   <main class="main-wrap">
@@ -15,19 +20,19 @@
         <dl class="data-list">
           <div class="data-row">
             <dt>Nombre</dt>
-            <dd>{{ nombre }}</dd>
+            <dd>{{ nombre() }}</dd>
           </div>
           <div class="data-row">
             <dt>Documento</dt>
-            <dd>{{ documento }}</dd>
+            <dd>{{ documento() }}</dd>
           </div>
           <div class="data-row">
             <dt>Tipo</dt>
-            <dd>{{ tipo }}</dd>
+            <dd>{{ tipo() }}</dd>
           </div>
           <div class="data-row">
             <dt>Teléfono</dt>
-            <dd>{{ telefono }}</dd>
+            <dd>{{ telefono() }}</dd>
           </div>
         </dl>
       </section>
@@ -39,11 +44,11 @@
         <dl class="data-list">
           <div class="data-row">
             <dt>Ubicación</dt>
-            <dd>{{ parqueaderoNombre }}</dd>
+            <dd>{{ parqueaderoNombre() }}</dd>
           </div>
           <div class="data-row">
             <dt>Desde</dt>
-            <dd>{{ parqueaderoDesde }}</dd>
+            <dd>{{ parqueaderoDesde() }}</dd>
           </div>
         </dl>
       </section>

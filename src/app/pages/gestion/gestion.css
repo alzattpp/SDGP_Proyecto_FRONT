@@ -27,6 +27,21 @@
   color: #0069a3;
 }
 
+.banner-error {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.875rem;
+  color: #8a1538;
+  background: #fdecef;
+  border-radius: 10px;
+}
+
+.cell-empty {
+  text-align: center;
+  color: #5a6d82;
+  padding: 1.25rem 1rem !important;
+}
+
 .dashboard {
   display: flex;
   flex-wrap: wrap;
@@ -97,6 +112,18 @@
 
 .btn-entrada:hover {
   filter: brightness(1.06);
+}
+
+.btn-entrada:disabled,
+.input-placa:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-salida:disabled,
+.btn-aceptar:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .car-illus {

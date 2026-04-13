@@ -123,6 +123,21 @@
   color: #f4d73b;
 }
 
+.perfil-alerta {
+  flex-basis: 100%;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  color: #8a1538;
+  background: #fdecef;
+}
+
+.perfil-alerta--muted {
+  color: #556b82;
+  background: #eef3f8;
+}
+
 .toolbar-actions {
   display: flex;
   flex-wrap: wrap;

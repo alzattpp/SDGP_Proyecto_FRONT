@@ -135,6 +135,22 @@
   filter: brightness(0.97);
 }
 
+.btn-ingresar:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.form-error {
+  margin: 0 0 1rem;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1a2d4d;
+  background: rgba(253, 236, 239, 0.95);
+  border-radius: 8px;
+  border: 1px solid rgba(138, 21, 56, 0.25);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

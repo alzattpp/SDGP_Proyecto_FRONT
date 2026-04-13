@@ -6,26 +6,38 @@
     <img src="/assets/logo.png" alt="SDGP UAM" class="logo" width="200" height="auto" />
     <h1 id="admin-login-title" class="sr-only">Login administrador</h1>
 
-    <form class="form" (submit)="$event.preventDefault()">
+    <form class="form" (ngSubmit)="ingresar()">
+      @if (errorMsg(); as err) {
+        <p class="form-error" role="alert">{{ err }}</p>
+      }
+
       <div class="field">
         <label for="admin-correo">Correo</label>
         <input
           id="admin-correo"
+          name="admin-correo"
           type="email"
           autocomplete="email"
           placeholder="Ingresa tu correo"
+          [ngModel]="correo()"
+          (ngModelChange)="correo.set($event)"
         />
       </div>
       <div class="field">
         <label for="admin-pass">Contraseña</label>
         <input
           id="admin-pass"
+          name="admin-pass"
           type="password"
           autocomplete="current-password"
           placeholder="Ingresa tu contraseña"
+          [ngModel]="contrasena()"
+          (ngModelChange)="contrasena.set($event)"
         />
       </div>
-      <a routerLink="/admin/perfil" class="btn-ingresar">Ingresar</a>
+      <button type="submit" class="btn-ingresar" [disabled]="loading()">
+        {{ loading() ? 'Entrando…' : 'Ingresar' }}
+      </button>
     </form>
   </main>
 </div>

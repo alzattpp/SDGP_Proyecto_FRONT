@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { TrabajadorNavbarComponent } from '../../components/trabajador-navbar/trabajador-navbar';
+import { mapUsuarioMe } from '../../services/usuarios/map-usuario-me';
+import { TrabajadorService } from '../../services/trabajador/trabajador.service';
 
 @Component({
   selector: 'app-perfil-trabajador',
@@ -9,14 +11,17 @@ import { TrabajadorNavbarComponent } from '../../components/trabajador-navbar/tr
   templateUrl: './perfil-trabajador.html',
   styleUrl: './perfil-trabajador.css',
 })
-export class PerfilTrabajadorComponent {
-  nombre = 'Usuario';
-  documento = '5555555555';
-  tipo = 'Trabajador';
-  telefono = '3148752222';
+export class PerfilTrabajadorComponent implements OnInit {
+  private readonly trabajadorService = inject(TrabajadorService);
 
-  parqueaderoNombre = 'Parqueadero Biblioteca';
-  parqueaderoDesde = '19/02/2026';
+  readonly nombre = signal('Usuario');
+  readonly documento = signal('—');
+  readonly tipo = signal('Trabajador');
+  readonly telefono = signal('—');
+  readonly parqueaderoNombre = signal('Parqueadero Biblioteca');
+  readonly parqueaderoDesde = signal('19/02/2026');
+  readonly perfilCargando = signal(true);
+  readonly perfilError = signal<string | null>(null);
 
   modalEditar = false;
   editNombre = '';
@@ -24,11 +29,31 @@ export class PerfilTrabajadorComponent {
   editTipo = '';
   editTelefono = '';
 
+  ngOnInit(): void {
+    this.trabajadorService.getCurrentTrabajador().subscribe({
+      next: (raw) => {
+        const v = mapUsuarioMe(raw);
+        this.nombre.set(v.nombre);
+        this.documento.set(v.documento);
+        this.tipo.set(v.tipo);
+        this.telefono.set(v.telefono);
+        if (v.parqueaderoNombre) this.parqueaderoNombre.set(v.parqueaderoNombre);
+        if (v.parqueaderoDesde) this.parqueaderoDesde.set(v.parqueaderoDesde);
+        this.perfilError.set(null);
+        this.perfilCargando.set(false);
+      },
+      error: () => {
+        this.perfilError.set('No se pudo cargar el perfil. ¿Iniciaste sesión?');
+        this.perfilCargando.set(false);
+      },
+    });
+  }
+
   openEditar(): void {
-    this.editNombre = this.nombre;
-    this.editDocumento = this.documento;
-    this.editTipo = this.tipo;
-    this.editTelefono = this.telefono;
+    this.editNombre = this.nombre();
+    this.editDocumento = this.documento();
+    this.editTipo = this.tipo();
+    this.editTelefono = this.telefono();
     this.modalEditar = true;
   }
 
@@ -37,10 +62,10 @@ export class PerfilTrabajadorComponent {
   }
 
   guardar(): void {
-    this.nombre = this.editNombre.trim() || this.nombre;
-    this.documento = this.editDocumento.trim() || this.documento;
-    this.tipo = this.editTipo.trim() || this.tipo;
-    this.telefono = this.editTelefono.trim() || this.telefono;
+    this.nombre.set(this.editNombre.trim() || this.nombre());
+    this.documento.set(this.editDocumento.trim() || this.documento());
+    this.tipo.set(this.editTipo.trim() || this.tipo());
+    this.telefono.set(this.editTelefono.trim() || this.telefono());
     this.closeEditar();
   }
 

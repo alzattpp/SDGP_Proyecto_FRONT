@@ -4,52 +4,78 @@
   <main class="main">
     <div class="head-row">
       <h1 class="page-title">Trabajadores</h1>
-      <button type="button" class="btn-anadir" (click)="abrirAgregar()">
+      <button type="button" class="btn-anadir" (click)="abrirAgregar()" [disabled]="cargando() || mutando()">
         <span class="btn-anadir__icon" aria-hidden="true">+</span>
         Añadir
       </button>
     </div>
 
-    <div class="table-wrap">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Documento</th>
-            <th>Teléfono</th>
-            <th>Parqueadero asignado</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (t of filas(); track t.id) {
+    @if (errorMsg(); as err) {
+      <p class="banner-error" role="alert">{{ err }}</p>
+    }
+
+    @if (cargando()) {
+      <p class="banner-muted">Cargando…</p>
+    } @else {
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
             <tr>
-              <td>{{ t.nombre }}</td>
-              <td>{{ t.documento }}</td>
-              <td>{{ t.telefono }}</td>
-              <td>{{ t.parqueadero }}</td>
-              <td class="cell-actions">
-                <button type="button" class="icon-btn icon-btn--edit" (click)="abrirEditar(t)" aria-label="Editar">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
-                    />
-                  </svg>
-                </button>
-                <button type="button" class="icon-btn icon-btn--del" (click)="eliminar(t)" aria-label="Eliminar">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                    <path
-                      fill="currentColor"
-                      d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                    />
-                  </svg>
-                </button>
-              </td>
+              <th>Nombre completo</th>
+              <th>Correo</th>
+              <th>Documento</th>
+              <th>Teléfono</th>
+              <th>Parqueadero asignado</th>
+              <th></th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            @for (t of filas(); track t.idTrabajador + '-' + t.idUsuario) {
+              <tr>
+                <td>{{ t.nombreCompleto }}</td>
+                <td>{{ t.correo }}</td>
+                <td>{{ t.documento }}</td>
+                <td>{{ t.telefono }}</td>
+                <td>{{ t.nombreParqueadero }}</td>
+                <td class="cell-actions">
+                  <button
+                    type="button"
+                    class="icon-btn icon-btn--edit"
+                    (click)="abrirEditar(t)"
+                    [disabled]="mutando()"
+                    aria-label="Editar"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="icon-btn icon-btn--del"
+                    (click)="eliminar(t)"
+                    [disabled]="mutando()"
+                    aria-label="Eliminar"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                      <path
+                        fill="currentColor"
+                        d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="cell-empty">No hay trabajadores registrados.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   </main>
 </div>
 
@@ -58,17 +84,55 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ta-title" (click)="$event.stopPropagation()">
     <h2 id="ta-title" class="modal-title modal-title--yellow">Agregar trabajador</h2>
     <form class="modal-form" (submit)="$event.preventDefault(); guardarAgregar()">
-      <input [(ngModel)]="addNombre" name="an" class="inp-line" type="text" placeholder="Nombre - Apellido" />
-      <input [(ngModel)]="addDoc" name="ad" class="inp-line" type="text" placeholder="Cedula" />
-      <input [(ngModel)]="addTel" name="at" class="inp-line" type="tel" placeholder="Teléfono" />
       <input
-        [(ngModel)]="addParq"
-        name="ap"
+        [(ngModel)]="addNombreCompleto"
+        name="an"
         class="inp-line"
         type="text"
-        placeholder="Parqueadero asignado"
+        placeholder="Nombre completo"
+        autocomplete="name"
       />
-      <button type="submit" class="btn-primary">Añadir</button>
+      <input
+        [(ngModel)]="addCorreo"
+        name="ac"
+        class="inp-line"
+        type="email"
+        placeholder="Correo"
+        autocomplete="email"
+      />
+      <input
+        [(ngModel)]="addContrasena"
+        name="apw"
+        class="inp-line"
+        type="password"
+        placeholder="Contraseña"
+        autocomplete="new-password"
+      />
+      <input
+        [(ngModel)]="addDocumento"
+        name="ad"
+        class="inp-line"
+        type="text"
+        placeholder="Documento"
+        autocomplete="off"
+      />
+      <input
+        [(ngModel)]="addTelefono"
+        name="at"
+        class="inp-line"
+        type="tel"
+        placeholder="Teléfono"
+        autocomplete="tel"
+      />
+      <select [(ngModel)]="addIdParqueadero" name="addPq" class="inp-line inp-line--select">
+        <option [ngValue]="null">Parqueadero asignado</option>
+        @for (p of parqueaderosOpciones(); track p.id) {
+          <option [ngValue]="p.id">{{ p.nombre }}</option>
+        }
+      </select>
+      <button type="submit" class="btn-primary" [disabled]="mutando()">
+        {{ mutando() ? 'Guardando…' : 'Añadir' }}
+      </button>
     </form>
   </div>
 }
@@ -77,13 +141,57 @@
   <div class="modal-backdrop" role="presentation" (click)="cerrarEditar()"></div>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="te-title" (click)="$event.stopPropagation()">
     <button type="button" class="modal-close" (click)="cerrarEditar()" aria-label="Cerrar">×</button>
-    <h2 id="te-title" class="modal-title modal-title--yellow">Editar Trabajador</h2>
+    <h2 id="te-title" class="modal-title modal-title--yellow">Editar trabajador</h2>
     <form class="modal-form" (submit)="$event.preventDefault(); guardarEditar()">
-      <input [(ngModel)]="editNombre" name="en" class="inp-line" type="text" placeholder="Nombre - Apellido" />
-      <input [(ngModel)]="editDoc" name="ed" class="inp-line" type="text" placeholder="1050000000" />
-      <input [(ngModel)]="editTel" name="et" class="inp-line" type="tel" placeholder="3100000000" />
-      <input [(ngModel)]="editParq" name="ep" class="inp-line" type="text" placeholder="Biblioteca" />
-      <button type="submit" class="btn-primary">Editar</button>
+      <input
+        [(ngModel)]="editNombreCompleto"
+        name="en"
+        class="inp-line"
+        type="text"
+        placeholder="Nombre completo"
+        autocomplete="name"
+      />
+      <input
+        [(ngModel)]="editCorreo"
+        name="ec"
+        class="inp-line"
+        type="email"
+        placeholder="Correo"
+        autocomplete="email"
+      />
+      <input
+        [(ngModel)]="editContrasena"
+        name="epw"
+        class="inp-line"
+        type="password"
+        placeholder="Contraseña (requerida; misma que en Postman)"
+        autocomplete="new-password"
+      />
+      <input
+        [(ngModel)]="editDocumento"
+        name="ed"
+        class="inp-line"
+        type="text"
+        placeholder="Documento"
+        autocomplete="off"
+      />
+      <input
+        [(ngModel)]="editTelefono"
+        name="et"
+        class="inp-line"
+        type="tel"
+        placeholder="Teléfono"
+        autocomplete="tel"
+      />
+      <select [(ngModel)]="editIdParqueadero" name="editPq" class="inp-line inp-line--select">
+        <option [ngValue]="null">Parqueadero asignado</option>
+        @for (p of parqueaderosOpciones(); track p.id) {
+          <option [ngValue]="p.id">{{ p.nombre }}</option>
+        }
+      </select>
+      <button type="submit" class="btn-primary" [disabled]="mutando()">
+        {{ mutando() ? 'Guardando…' : 'Guardar cambios' }}
+      </button>
     </form>
   </div>
 }

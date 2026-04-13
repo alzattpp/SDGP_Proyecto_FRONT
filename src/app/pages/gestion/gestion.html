@@ -2,11 +2,15 @@
   <app-trabajador-navbar [topLabel]="'GESTIÓN DE PARQUEADEROS'" />
 
   <main class="main">
-    <h1 class="page-heading">{{ nombreParqueadero }} - Gestión</h1>
+    <h1 class="page-heading">{{ nombreParqueadero() }} - Gestión</h1>
+
+    @if (errorMsg(); as err) {
+      <p class="banner-error" role="alert">{{ err }}</p>
+    }
 
     <section class="dashboard" aria-label="Resumen y registro">
       <div class="dashboard-col dashboard-col--form">
-        <p class="stat-line">Capacidad total: {{ capacidadTotal }} parqueaderos</p>
+        <p class="stat-line">Capacidad total: {{ capacidadTotal() }} parqueaderos</p>
         <p class="stat-line">Cupos disponibles: {{ cuposDisponibles() }} parqueaderos</p>
 
         <div class="entrada-box">
@@ -16,11 +20,19 @@
             type="text"
             name="placaEntrada"
             [(ngModel)]="placaEntrada"
-            placeholder="NAM - 789"
+            placeholder="ABC123 o NAM - 789"
             autocomplete="off"
             class="input-placa"
+            [disabled]="!idParqueadero() || registrandoEntrada()"
           />
-          <button type="button" class="btn-entrada" (click)="registrarEntrada()">Registrar Entrada</button>
+          <button
+            type="button"
+            class="btn-entrada"
+            (click)="registrarEntrada()"
+            [disabled]="!idParqueadero() || registrandoEntrada()"
+          >
+            {{ registrandoEntrada() ? 'Registrando…' : 'Registrar Entrada' }}
+          </button>
         </div>
       </div>
 
@@ -46,7 +58,7 @@
       <div class="table-toolbar">
         <h2 id="tabla-registros" class="sr-only">Vehículos en parqueadero</h2>
         <div class="search-wrap">
-          <span class="search-icon" aria-hidden="true">🔍</span>
+          <span class="search-icon" aria-hidden="true">&#128269;</span>
           <input
             type="search"
             [(ngModel)]="busqueda"
@@ -68,13 +80,30 @@
             </tr>
           </thead>
           <tbody>
-            @for (r of filtrados(); track r.placa) {
+            @for (r of filtrados(); track r.idIngreso + '-' + r.placa) {
               <tr>
                 <td>{{ r.placa }}</td>
                 <td>{{ r.horaIngreso }}</td>
                 <td>{{ r.estado }}</td>
                 <td>
-                  <button type="button" class="btn-salida" (click)="abrirSalida(r.placa)">Registrar Salida</button>
+                  <button
+                    type="button"
+                    class="btn-salida"
+                    (click)="abrirSalida(r)"
+                    [disabled]="!r.idIngreso || registrandoSalida()"
+                  >
+                    Registrar Salida
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="cell-empty">
+                  @if (!inicializado()) {
+                    Cargando…
+                  } @else {
+                    No hay vehículos registrados dentro del parqueadero.
+                  }
                 </td>
               </tr>
             }
@@ -89,8 +118,10 @@
   <div class="modal-backdrop" role="presentation" (click)="cerrarModal()"></div>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="salida-msg" (click)="$event.stopPropagation()">
     <p id="salida-msg" class="modal-text">
-      Salida Registrada del vehículo con placas <strong>{{ placaSalidaModal() }}</strong>
+      ¿Registrar salida del vehículo con placa <strong>{{ placaSalidaModal() }}</strong>?
     </p>
-    <button type="button" class="btn-aceptar" (click)="confirmarSalida()">ACEPTAR</button>
+    <button type="button" class="btn-aceptar" (click)="confirmarSalida()" [disabled]="registrandoSalida()">
+      {{ registrandoSalida() ? 'Procesando…' : 'ACEPTAR' }}
+    </button>
   </div>
 }

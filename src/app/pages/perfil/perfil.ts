@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+
+import { mapUsuarioMe } from '../../services/usuarios/map-usuario-me';
+import { UsuarioService } from '../../services/usuarios/usuario.service';
 
 export interface MedioPagoItem {
   id: string;
@@ -20,10 +23,14 @@ export interface PlacaItem {
   templateUrl: './perfil.html',
   styleUrl: './perfil.css',
 })
-export class PerfilComponent {
-  nombrePerfil = 'Usuario';
-  documentoPerfil = '5555555555';
-  tipoPerfil = 'Institucional';
+export class PerfilComponent implements OnInit {
+  private readonly usuarioService = inject(UsuarioService);
+
+  readonly nombrePerfil = signal('Usuario');
+  readonly documentoPerfil = signal('—');
+  readonly tipoPerfil = signal('Usuario');
+  readonly perfilCargando = signal(true);
+  readonly perfilError = signal<string | null>(null);
 
   mediosPago: MedioPagoItem[] = [
     { id: '1', detalle: '1000-455-8800', tipo: 'VISA' },
@@ -51,6 +58,23 @@ export class PerfilComponent {
   modalPlaca = false;
   nuevaPlaca = '';
   nuevaMarca = '';
+
+  ngOnInit(): void {
+    this.usuarioService.getCurrentUsuario().subscribe({
+      next: (raw) => {
+        const v = mapUsuarioMe(raw);
+        this.nombrePerfil.set(v.nombre);
+        this.documentoPerfil.set(v.documento);
+        this.tipoPerfil.set(v.tipo);
+        this.perfilError.set(null);
+        this.perfilCargando.set(false);
+      },
+      error: () => {
+        this.perfilError.set('No se pudo cargar el perfil. ¿Iniciaste sesión?');
+        this.perfilCargando.set(false);
+      },
+    });
+  }
 
   openMedios(): void {
     this.modalMedios = true;
@@ -86,9 +110,9 @@ export class PerfilComponent {
   }
 
   openEditar(): void {
-    this.editNombre = this.nombrePerfil;
-    this.editDocumento = this.documentoPerfil;
-    this.editTipo = this.tipoPerfil;
+    this.editNombre = this.nombrePerfil();
+    this.editDocumento = this.documentoPerfil();
+    this.editTipo = this.tipoPerfil();
     this.modalEditar = true;
   }
 
@@ -97,9 +121,9 @@ export class PerfilComponent {
   }
 
   guardarPerfil(): void {
-    this.nombrePerfil = this.editNombre.trim() || this.nombrePerfil;
-    this.documentoPerfil = this.editDocumento.trim() || this.documentoPerfil;
-    this.tipoPerfil = this.editTipo.trim() || this.tipoPerfil;
+    this.nombrePerfil.set(this.editNombre.trim() || this.nombrePerfil());
+    this.documentoPerfil.set(this.editDocumento.trim() || this.documentoPerfil());
+    this.tipoPerfil.set(this.editTipo.trim() || this.tipoPerfil());
     this.closeEditar();
   }
 
