@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdminNavbarComponent } from '../../components/admin-navbar/admin-navbar';
+import { AdministradorService } from '../../services/administrador/administrador.service';
+import { mapUsuarioMe } from '../../services/usuarios/map-usuario-me';
 
 @Component({
   selector: 'app-admin-perfil',
@@ -8,12 +10,16 @@ import { AdminNavbarComponent } from '../../components/admin-navbar/admin-navbar
   templateUrl: './admin-perfil.html',
   styleUrl: './admin-perfil.css',
 })
-export class AdminPerfilComponent {
-  nombre = 'Carlos';
-  documento = '80123456';
-  telefono = '3001234567';
+export class AdminPerfilComponent implements OnInit {
+  private readonly administradorService = inject(AdministradorService);
+
+  nombre = '—';
+  documento = '—';
+  telefono = '—';
   tipo = 'Administrador';
-  ultimoAcceso = '19/02/2026, 2:30 p. m.';
+  ultimoAcceso = '—';
+  perfilCargando = true;
+  perfilError: string | null = null;
 
   modalEditar = false;
   editNombre = '';
@@ -24,6 +30,24 @@ export class AdminPerfilComponent {
   modalClave = false;
   nuevaClave = '';
   repetirClave = '';
+
+  ngOnInit(): void {
+    this.administradorService.getCurrentAdministrador().subscribe({
+      next: (raw) => {
+        const v = mapUsuarioMe(raw);
+        this.nombre = v.nombre;
+        this.documento = v.documento;
+        this.telefono = v.telefono;
+        this.tipo = v.tipo;
+        this.perfilError = null;
+        this.perfilCargando = false;
+      },
+      error: () => {
+        this.perfilError = 'No se pudo cargar el perfil. ¿Iniciaste sesión como administrador?';
+        this.perfilCargando = false;
+      },
+    });
+  }
 
   openEditar(): void {
     this.editNombre = this.nombre;

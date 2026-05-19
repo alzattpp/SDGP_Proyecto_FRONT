@@ -109,6 +109,32 @@
   width: 100%;
 }
 
+.pagos-alerta {
+  margin: 0 0 1rem;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  background: #fde8e8;
+  color: #8b1a1a;
+  font-size: 0.9rem;
+}
+
+.pagos-alerta--muted {
+  background: #e8eef3;
+  color: #1a2d4d;
+}
+
+.field-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.cell-empty {
+  text-align: center;
+  color: #666;
+  padding: 1rem;
+}
+
 .page-title {
   margin: 0 0 1.5rem;
   font-size: clamp(1.5rem, 4vw, 2rem);

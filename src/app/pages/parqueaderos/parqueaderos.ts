@@ -1,5 +1,7 @@
-import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+import { UsuarioNavbarComponent } from '../../components/usuario-navbar/usuario-navbar';
 
 export interface Parqueadero {
   nombre: string;
@@ -12,13 +14,11 @@ export interface Parqueadero {
 
 @Component({
   selector: 'app-parqueaderos',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, UsuarioNavbarComponent],
   templateUrl: './parqueaderos.html',
   styleUrl: './parqueaderos.css',
 })
 export class ParqueaderosComponent {
-  private readonly router = inject(Router);
-
   readonly items: Parqueadero[] = [
     {
       nombre: 'Parqueadero Biblioteca',
@@ -44,11 +44,6 @@ export class ParqueaderosComponent {
       disponibilidadPct: 85,
     },
   ];
-
-  navParqueaderosActivo(): boolean {
-    const p = this.router.url.split('?')[0];
-    return p === '/parqueaderos' || p === '/parqueaderos-visitantes';
-  }
 
   /** Verde &lt; 35 %, amarillo 35–75 %, rojo &gt; 75 % (según disponibilidad). */
   imagenCarro(disponibilidadPct: number): string {

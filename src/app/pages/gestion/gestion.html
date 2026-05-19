@@ -1,5 +1,5 @@
 <div class="page">
-  <app-trabajador-navbar [topLabel]="'GESTIÓN DE PARQUEADEROS'" />
+  <app-trabajador-navbar />
 
   <main class="main">
     <h1 class="page-heading">{{ nombreParqueadero() }} - Gestión</h1>
@@ -58,7 +58,6 @@
       <div class="table-toolbar">
         <h2 id="tabla-registros" class="sr-only">Vehículos en parqueadero</h2>
         <div class="search-wrap">
-          <span class="search-icon" aria-hidden="true">&#128269;</span>
           <input
             type="search"
             [(ngModel)]="busqueda"

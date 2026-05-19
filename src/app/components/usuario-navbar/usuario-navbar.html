@@ -1,0 +1,60 @@
+<header class="navbar">
+  <a routerLink="/principal" class="brand" aria-label="Inicio SDGP UAM">
+    <span class="brand-mark">
+      <img src="/assets/logo.png" alt="" width="48" height="48" />
+    </span>
+    <span class="brand-text">SDGP UAM</span>
+  </a>
+
+  <nav class="nav-links" aria-label="Principal">
+    <a
+      routerLink="/parqueaderos"
+      class="nav-item"
+      [class.nav-item--active]="navParqueaderosActivo()"
+      >Parqueaderos</a
+    >
+    <a
+      routerLink="/pagos"
+      class="nav-item"
+      routerLinkActive="nav-item--active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >Pagos</a
+    >
+    <a
+      routerLink="/reservas"
+      class="nav-item"
+      [class.nav-item--active]="navReservasActivo()"
+      >Reservas</a
+    >
+  </nav>
+
+  <div class="user-menu" [class.user-menu--open]="menuAbierto()">
+    <button
+      type="button"
+      class="avatar"
+      aria-label="Menú de cuenta"
+      aria-haspopup="menu"
+      [attr.aria-expanded]="menuAbierto()"
+      (click)="toggleMenu($event)"
+    >
+      <img src="/assets/avatar.png" alt="" class="avatar-img" width="44" height="44" />
+    </button>
+
+    @if (menuAbierto()) {
+      <div class="user-menu__panel" role="menu" (click)="$event.stopPropagation()">
+        <a
+          routerLink="/perfil"
+          class="user-menu__item"
+          role="menuitem"
+          routerLinkActive="user-menu__item--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="cerrarMenu()"
+          >Mi Perfil</a
+        >
+        <button type="button" class="user-menu__item user-menu__item--logout" role="menuitem" (click)="cerrarSesion()">
+          Cerrar sesión
+        </button>
+      </div>
+    }
+  </div>
+</header>

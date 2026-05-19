@@ -3,6 +3,11 @@
 
   <main class="main">
     <h1 class="welcome">Bienvenido - {{ nombre }}</h1>
+    @if (perfilError) {
+      <p class="perfil-alerta" role="alert">{{ perfilError }}</p>
+    } @else if (perfilCargando) {
+      <p class="perfil-alerta perfil-alerta--muted">Cargando perfil…</p>
+    }
 
     <div class="panel">
       <section class="block">

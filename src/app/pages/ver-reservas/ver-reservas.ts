@@ -1,8 +1,10 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
+
+import { UsuarioNavbarComponent } from '../../components/usuario-navbar/usuario-navbar';
 
 export interface Reserva {
   id: string;
@@ -16,13 +18,11 @@ export interface Reserva {
 
 @Component({
   selector: 'app-ver-reservas',
-  imports: [RouterLink, RouterLinkActive, FormsModule, DecimalPipe],
+  imports: [RouterLink, UsuarioNavbarComponent, FormsModule, DecimalPipe],
   templateUrl: './ver-reservas.html',
   styleUrl: './ver-reservas.css',
 })
 export class VerReservasComponent {
-  private readonly router = inject(Router);
-
   readonly parqueaderos = [
     'Biblioteca',
     'Parqueadero Bavaria',
@@ -54,11 +54,6 @@ export class VerReservasComponent {
   pagoOpen = false;
   private pagoReservaId: string | null = null;
   metodoPago = 'Tarjeta';
-
-  navReservasActivo(): boolean {
-    const p = this.router.url.split('?')[0];
-    return p === '/reservas' || p === '/ver-reservas';
-  }
 
   openEdit(r: Reserva): void {
     this.editingId = r.id;

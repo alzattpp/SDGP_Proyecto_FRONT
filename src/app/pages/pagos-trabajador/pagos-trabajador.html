@@ -4,28 +4,39 @@
   <main class="main">
     <h1 class="page-title">Pagos</h1>
 
+    @if (errorMsg(); as err) {
+      <p class="pagos-alerta" role="alert">{{ err }}</p>
+    }
+    @if (cargando()) {
+      <p class="pagos-alerta pagos-alerta--muted">Cargando pagos…</p>
+    }
+
     <div class="table-border">
       <table class="data-table">
         <thead>
           <tr>
             <th>Placa</th>
             <th>Hora de pago</th>
-            <th>Estado</th>
             <th>Medio</th>
             <th>Detalles</th>
           </tr>
         </thead>
         <tbody>
-          @for (p of filas; track p.placa + p.horaPago) {
+          @for (p of filas(); track p.idPago) {
             <tr>
               <td>{{ p.placa }}</td>
               <td>{{ p.horaPago }}</td>
-              <td>{{ p.estado }}</td>
               <td>{{ p.medio }}</td>
               <td>
                 <button type="button" class="btn-ver" (click)="verDetalle(p)">Ver</button>
               </td>
             </tr>
+          } @empty {
+            @if (!cargando()) {
+              <tr>
+                <td colspan="4" class="cell-empty">No hay pagos registrados en este parqueadero.</td>
+              </tr>
+            }
           }
         </tbody>
       </table>

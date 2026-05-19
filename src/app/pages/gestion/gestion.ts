@@ -4,6 +4,7 @@ import { catchError, finalize, forkJoin, of } from 'rxjs';
 
 import { TrabajadorNavbarComponent } from '../../components/trabajador-navbar/trabajador-navbar';
 import { IngresoService } from '../../services/ingreso/ingreso.service';
+import { formatearFechaHoraColombiaDesdeValor } from '../../utils/fecha-hora.util';
 import { ParqueaderoService } from '../../services/parqueaderos/parqueaderos.service';
 import { TrabajadorService } from '../../services/trabajador/trabajador.service';
 
@@ -44,6 +45,7 @@ export class GestionComponent implements OnInit {
   readonly registrandoEntrada = signal(false);
   readonly registrandoSalida = signal(false);
   readonly errorMsg = signal<string | null>(null);
+  private nombreParqueaderoDesdeMe: string | null = null;
 
   placaEntrada = '';
   busqueda = '';
@@ -72,6 +74,7 @@ export class GestionComponent implements OnInit {
   ngOnInit(): void {
     this.trabajadorService.getCurrentTrabajador().subscribe({
       next: (me) => {
+        this.nombreParqueaderoDesdeMe = this.extraerNombreParqueaderoTrabajador(me);
         const idP = this.extraerIdParqueaderoTrabajador(me);
         if (!idP) {
           this.errorMsg.set('No hay parqueadero asignado en tu perfil de trabajador.');
@@ -106,14 +109,33 @@ export class GestionComponent implements OnInit {
     return id > 0 ? id : null;
   }
 
+  private extraerNombreParqueaderoTrabajador(raw: unknown): string | null {
+    const r = rec(raw) ?? {};
+    const data = rec(r['data']);
+    const u = rec(r['usuario'] ?? r['user']) ?? data ?? r;
+    const pq = rec(u['parqueadero']) ?? rec(data?.['parqueadero']);
+    const nombre = String(
+      pq?.['nombre'] ??
+        pq?.['nombreParqueadero'] ??
+        data?.['nombreParqueadero'] ??
+        u['nombreParqueadero'] ??
+        r['nombreParqueadero'] ??
+        '',
+    ).trim();
+    return nombre || null;
+  }
+
   private cargarParqueaderoEIngresos(idP: number): void {
     this.errorMsg.set(null);
     forkJoin({
       parqueadero: this.parqueaderoService.getParqueaderoStats(idP),
+      parqueaderoDetalle: this.parqueaderoService
+        .getParqueaderoById(idP)
+        .pipe(catchError(() => of(null))),
       ingresos: this.ingresoService.getIngresos().pipe(catchError(() => of([]))),
     }).subscribe({
-      next: ({ parqueadero, ingresos }) => {
-        this.aplicarInfoParqueadero(parqueadero, idP);
+      next: ({ parqueadero, parqueaderoDetalle, ingresos }) => {
+        this.aplicarInfoParqueadero(parqueadero, idP, parqueaderoDetalle);
         this.aplicarIngresosLista(ingresos, idP);
         this.inicializado.set(true);
       },
@@ -124,16 +146,19 @@ export class GestionComponent implements OnInit {
     });
   }
 
-  private aplicarInfoParqueadero(raw: unknown, idP: number): void {
+  private aplicarInfoParqueadero(raw: unknown, idP: number, detalleRaw?: unknown): void {
     const o = this.normalizarCuerpoStats(raw);
+    const d = this.normalizarCuerpoParqueadero(detalleRaw);
     const nom = String(
       o['nombre'] ??
         o['nombreParqueadero'] ??
         rec(o['parqueadero'])?.['nombre'] ??
+        d['nombre'] ??
+        d['nombreParqueadero'] ??
         '',
     ).trim();
     if (nom) this.nombreParqueadero.set(nom);
-    else this.nombreParqueadero.set(`Parqueadero #${idP}`);
+    else this.nombreParqueadero.set(this.nombreParqueaderoDesdeMe ?? `Parqueadero #${idP}`);
     const cap = Number(
       o['capacidadMaxima'] ??
         o['capacidadTotal'] ??
@@ -174,6 +199,11 @@ export class GestionComponent implements OnInit {
     );
   }
 
+  private normalizarCuerpoParqueadero(raw: unknown): Record<string, unknown> {
+    const r = rec(raw) ?? {};
+    return rec(r['data']) ?? rec(r['parqueadero']) ?? rec(r['resultado']) ?? r;
+  }
+
   private aplicarIngresosLista(raw: unknown, idP: number): void {
     const rows = asArray(raw)
       .filter((x) => {
@@ -194,31 +224,12 @@ export class GestionComponent implements OnInit {
   }
 
   private mapIngresoFila(x: Record<string, unknown>): RegistroVehiculo {
-    const id = Number(x['idIngreso'] ?? x['id'] ?? 0);
+    const id = this.extraerIdIngreso(x);
     const placa = String(x['placa'] ?? '');
     const hi = x['horaIngreso'];
-    let horaIngreso = '';
-    if (hi != null) {
-      if (typeof hi === 'string') {
-        horaIngreso = hi;
-      } else {
-        try {
-          horaIngreso = new Date(String(hi)).toLocaleTimeString('es-CO', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true,
-          });
-        } catch {
-          horaIngreso = String(hi);
-        }
-      }
-    }
+    let horaIngreso = formatearFechaHoraColombiaDesdeValor(hi);
     if (!horaIngreso) {
-      horaIngreso = new Date().toLocaleTimeString('es-CO', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      });
+      horaIngreso = formatearFechaHoraColombiaDesdeValor(new Date());
     }
     return {
       idIngreso: id,
@@ -228,15 +239,33 @@ export class GestionComponent implements OnInit {
     };
   }
 
+  /**
+   * Algunos endpoints devuelven el id con distinto nombre:
+   * idIngreso | id_ingreso | idingreso.
+   * Evitamos usar `id` genérico para no tomar ids de otras entidades.
+   */
+  private extraerIdIngreso(x: Record<string, unknown>): number {
+    const val =
+      x['idIngreso'] ??
+      x['id_ingreso'] ??
+      x['idingreso'] ??
+      x['IDINGRESO'] ??
+      rec(x['ingreso'])?.['idIngreso'] ??
+      rec(x['ingreso'])?.['id_ingreso'] ??
+      0;
+    const id = Number(val);
+    return Number.isFinite(id) && id > 0 ? id : 0;
+  }
+
   /** Igual que Postman: placa sin espacios, mayúsculas. */
   private normalizarPlacaApi(s: string): string {
     return s.trim().replace(/\s+/g, '').toUpperCase();
   }
 
   imagenCarro(): string {
-    const d = this.disponibilidadPct();
-    if (d < 35) return '/assets/carroVerde.png';
-    if (d <= 75) return '/assets/carroAmarillo.png';
+    const o = this.ocupacionPct();
+    if (o <= 30) return '/assets/carroVerde.png';
+    if (o <= 70) return '/assets/carroAmarillo.png';
     return '/assets/carroRojo.png';
   }
 
@@ -288,7 +317,7 @@ export class GestionComponent implements OnInit {
     }
     this.registrandoSalida.set(true);
     this.ingresoService
-      .deleteIngreso(id)
+      .registrarSalida(id)
       .pipe(finalize(() => this.registrandoSalida.set(false)))
       .subscribe({
         next: () => {
@@ -299,7 +328,7 @@ export class GestionComponent implements OnInit {
           const e = err as { error?: { message?: string; mensaje?: string } };
           const b = e?.error;
           this.errorMsg.set(
-            b?.message ?? b?.mensaje ?? 'No se pudo eliminar el registro de ingreso.',
+            b?.message ?? b?.mensaje ?? 'No se pudo registrar la salida.',
           );
           this.modalSalidaAbierto.set(false);
         },

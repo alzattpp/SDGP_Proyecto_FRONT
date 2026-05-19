@@ -1,8 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { catchError, finalize, map, of, switchMap } from 'rxjs';
+import { catchError, finalize, of, switchMap } from 'rxjs';
 
+import { AuthService } from '../../auth/auth.service';
 import { UsuarioService } from '../../services/usuarios/usuario.service';
 
 @Component({
@@ -13,6 +14,7 @@ import { UsuarioService } from '../../services/usuarios/usuario.service';
 })
 export class AdminLoginComponent {
   private readonly usuarioService = inject(UsuarioService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   readonly correo = signal('');
@@ -32,12 +34,7 @@ export class AdminLoginComponent {
     this.usuarioService
       .login({ correo, contrasena })
       .pipe(
-        switchMap((loginRes) =>
-          this.usuarioService.getCurrentUsuario().pipe(
-            map((me) => this.combinarPerfilYLogin(me, loginRes)),
-            catchError(() => of(loginRes)),
-          ),
-        ),
+        switchMap(() => this.authService.refreshSession()),
         catchError((err) => {
           const body = err?.error;
           const msg =
@@ -46,32 +43,24 @@ export class AdminLoginComponent {
             body?.mensaje ??
             'No se pudo iniciar sesión.';
           this.errorMsg.set(msg);
+          this.authService.clearSession();
           return of(null);
         }),
         finalize(() => this.loading.set(false)),
       )
-      .subscribe((perfil) => {
-        if (!perfil) return;
-        if (!this.esAdmin(perfil)) {
+      .subscribe((session) => {
+        if (!session) {
+          if (!this.errorMsg()) {
+            this.errorMsg.set('Sesión inválida.');
+          }
+          return;
+        }
+        if (session.rol !== 'administrador') {
           this.errorMsg.set('Esta cuenta no tiene rol de administrador.');
+          this.authService.clearSession();
           return;
         }
         void this.router.navigateByUrl('/admin/perfil');
       });
-  }
-
-  private combinarPerfilYLogin(me: any, loginRes: any): any {
-    const base = me && typeof me === 'object' ? me : {};
-    const rol = base['rol'] ?? base['role'] ?? loginRes?.rol ?? loginRes?.role;
-    return { ...base, rol };
-  }
-
-  private esAdmin(data: any): boolean {
-    if (!data || typeof data !== 'object') return false;
-    if (data.esAdmin === true || data.admin === true) return true;
-    const anidado = data.usuario ?? data.user;
-    if (anidado && this.esAdmin(anidado)) return true;
-    const rol = String(data.rol ?? data.role ?? data.tipoUsuario ?? data.tipo ?? '').toLowerCase();
-    return rol === 'admin' || rol.includes('admin') || rol.includes('administrador');
   }
 }

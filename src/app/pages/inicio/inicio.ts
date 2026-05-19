@@ -1,8 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { catchError, finalize, map, of, switchMap } from 'rxjs';
+import { catchError, finalize, of, switchMap } from 'rxjs';
 
+import { AuthService } from '../../auth/auth.service';
 import { UsuarioService } from '../../services/usuarios/usuario.service';
 
 @Component({
@@ -13,6 +14,7 @@ import { UsuarioService } from '../../services/usuarios/usuario.service';
 })
 export class InicioComponent {
   private readonly usuarioService = inject(UsuarioService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   readonly email = signal('');
@@ -32,9 +34,7 @@ export class InicioComponent {
     this.usuarioService
       .login({ correo: email, contrasena })
       .pipe(
-        switchMap((loginRes) =>
-          this.usuarioService.getCurrentUsuario().pipe(catchError(() => of(loginRes))),
-        ),
+        switchMap(() => this.authService.refreshSession()),
         catchError((err) => {
           const body = err?.error;
           const msg =
@@ -43,36 +43,24 @@ export class InicioComponent {
             body?.mensaje ??
             'No se pudo iniciar sesión.';
           this.errorMsg.set(msg);
+          this.authService.clearSession();
           return of(null);
         }),
         finalize(() => this.loading.set(false)),
       )
-      .subscribe((perfil) => {
-        if (!perfil) return;
-        const destino = this.esTrabajador(perfil) ? '/trabajador' : '/principal';
-        void this.router.navigateByUrl(destino);
+      .subscribe((session) => {
+        if (!session) {
+          if (!this.errorMsg()) {
+            this.errorMsg.set('Sesión inválida o rol no reconocido.');
+          }
+          return;
+        }
+        if (session.rol === 'administrador') {
+          this.errorMsg.set('Usa el acceso de administración en /admin/login.');
+          this.authService.clearSession();
+          return;
+        }
+        void this.router.navigateByUrl(this.authService.getHomeRoute(session.rol));
       });
-  }
-
-  /** Mantiene el `rol` del login si /me no lo trae (ej. solo { message, rol } en POST). */
-  private combinarPerfilYLogin(me: any, loginRes: any): any {
-    const base = me && typeof me === 'object' ? me : {};
-    const rol = base.rol ?? base.role ?? loginRes?.rol ?? loginRes?.role;
-    return { ...base, rol };
-  }
-
-  /** `rol` del API: "trabajador" → vista trabajador; "usuario" (u otro) → principal. */
-  private esTrabajador(data: any): boolean {
-    if (!data || typeof data !== 'object') return false;
-    if (data.esTrabajador === true || data.es_trabajador === true || data.trabajador === true) {
-      return true;
-    }
-    const anidado = data.usuario ?? data.user;
-    if (anidado && this.esTrabajador(anidado)) return true;
-    const rol = String(data.rol ?? data.role ?? data.tipoUsuario ?? data.tipo ?? '').toLowerCase();
-    if (rol === 'trabajador' || rol.includes('trabajador') || rol === 'worker' || rol.includes('empleado')) {
-      return true;
-    }
-    return false;
   }
 }

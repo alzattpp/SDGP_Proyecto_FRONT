@@ -44,4 +44,11 @@ export class AdministradorService {
   deleteAdministrador(idUsuario: number): Observable<any> {
     return this.http.delete(`${this.api}/delete/${idUsuario}`);
   }
+
+
+getCurrentAdministrador(): Observable<any> {
+  return this.http.get(`${this.api}/me`, {
+    withCredentials: true,
+  });
+}
 }

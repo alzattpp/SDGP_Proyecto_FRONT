@@ -1,64 +1,85 @@
-/** Normaliza la respuesta de GET /me (o objeto usuario anidado) para las vistas de perfil. */
+/** Normaliza GET /me: `{ data: { nombreCompleto, documento, ... }, rol }` u otras variantes. */
 export interface UsuarioMeVista {
   nombre: string;
   documento: string;
   tipo: string;
   telefono: string;
   correo: string;
+  idUsuario?: number;
+  idParqueadero?: number;
   parqueaderoNombre?: string;
-  parqueaderoDesde?: string;
 }
 
 function rec(v: unknown): Record<string, unknown> | undefined {
   return v && typeof v === 'object' ? (v as Record<string, unknown>) : undefined;
 }
 
-export function mapUsuarioMe(raw: unknown): UsuarioMeVista {
+function strOrDash(...vals: unknown[]): string {
+  for (const v of vals) {
+    if (v == null) continue;
+    const s = String(v).trim();
+    if (s) return s;
+  }
+  return '—';
+}
+
+function formatRol(rol: string): string {
+  const r = rol.trim();
+  if (!r) return 'Usuario';
+  return r.charAt(0).toUpperCase() + r.slice(1).toLowerCase();
+}
+
+/** Extrae el objeto usuario y el rol desde la respuesta del API. */
+function extractPayload(raw: unknown): { u: Record<string, unknown>; rol: string } {
   const r = rec(raw) ?? {};
-  const u = rec(r['usuario'] ?? r['user']) ?? r;
+  const data = rec(r['data']);
+  if (data) {
+    const rol = String(r['rol'] ?? r['role'] ?? data['rol'] ?? data['role'] ?? '');
+    return { u: data, rol };
+  }
+  const nested = rec(r['usuario'] ?? r['user']);
+  if (nested) {
+    const rol = String(r['rol'] ?? r['role'] ?? nested['rol'] ?? nested['role'] ?? '');
+    return { u: nested, rol };
+  }
+  const rol = String(r['rol'] ?? r['role'] ?? r['tipoUsuario'] ?? r['tipo'] ?? '');
+  return { u: r, rol };
+}
+
+export function mapUsuarioMe(raw: unknown): UsuarioMeVista {
+  const { u, rol } = extractPayload(raw);
 
   const nombrePartes = [u['nombre'], u['apellido']].filter(
     (x) => x != null && String(x).trim() !== '',
   );
   const nombre =
     (nombrePartes.length ? nombrePartes.map(String).join(' ') : '') ||
-    String(u['nombreCompleto'] ?? u['name'] ?? r['nombre'] ?? '') ||
-    'Usuario';
+    strOrDash(u['nombreCompleto'], u['name'], u['nombre']);
 
-  const documento = String(
-    u['documento'] ??
-      u['cedula'] ??
-      u['numeroDocumento'] ??
-      u['dni'] ??
-      r['documento'] ??
-      '—',
+  const documento = strOrDash(
+    u['documento'],
+    u['cedula'],
+    u['numeroDocumento'],
+    u['dni'],
   );
 
-  const rolRaw = String(
-    u['rol'] ?? r['rol'] ?? u['tipoUsuario'] ?? u['tipo'] ?? r['tipo'] ?? 'usuario',
-  );
-  const tipo = rolRaw
-    ? rolRaw.charAt(0).toUpperCase() + rolRaw.slice(1).toLowerCase()
-    : 'Usuario';
+  const tipo = rol ? formatRol(rol) : formatRol(String(u['tipoUsuario'] ?? u['tipo'] ?? 'usuario'));
 
-  const telefono = String(
-    u['telefono'] ?? u['celular'] ?? u['phone'] ?? r['telefono'] ?? '—',
-  );
-  const correo = String(u['correo'] ?? u['email'] ?? r['correo'] ?? r['email'] ?? '—');
+  const telefono = strOrDash(u['telefono'], u['celular'], u['phone']);
+  const correo = strOrDash(u['correo'], u['email']);
+
+  const idU = Number(u['idUsuario'] ?? u['id_usuario'] ?? 0);
+  const idUsuario = idU > 0 ? idU : undefined;
+
+  const idP = Number(u['idParqueadero'] ?? u['id_parqueadero'] ?? 0);
+  const idParqueadero = idP > 0 ? idP : undefined;
 
   const pq = rec(u['parqueadero']);
   const parqueaderoNombre = String(
     u['parqueaderoNombre'] ??
       pq?.['nombre'] ??
+      pq?.['nombreParqueadero'] ??
       pq?.['ubicacion'] ??
-      r['parqueaderoNombre'] ??
-      '',
-  ).trim();
-  const parqueaderoDesde = String(
-    u['parqueaderoDesde'] ??
-      pq?.['desde'] ??
-      pq?.['fechaAsignacion'] ??
-      r['parqueaderoDesde'] ??
       '',
   ).trim();
 
@@ -68,7 +89,8 @@ export function mapUsuarioMe(raw: unknown): UsuarioMeVista {
     tipo,
     telefono,
     correo,
+    ...(idUsuario ? { idUsuario } : {}),
+    ...(idParqueadero ? { idParqueadero } : {}),
     ...(parqueaderoNombre ? { parqueaderoNombre } : {}),
-    ...(parqueaderoDesde ? { parqueaderoDesde } : {}),
   };
 }

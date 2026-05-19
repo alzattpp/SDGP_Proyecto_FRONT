@@ -1,82 +1,106 @@
 <div class="page">
-  <header class="navbar">
-    <a routerLink="/principal" class="brand" aria-label="Inicio SDGP UAM">
-      <span class="brand-mark">
-        <img src="/assets/logo.png" alt="" width="48" height="48" />
-      </span>
-      <span class="brand-text">SDGP UAM</span>
-    </a>
-
-    <nav class="nav-links" aria-label="Principal">
-      <a
-        routerLink="/parqueaderos"
-        class="nav-item"
-        routerLinkActive="nav-item--active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        >Parqueaderos</a
-      >
-      <a
-        routerLink="/pagos"
-        class="nav-item"
-        routerLinkActive="nav-item--active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        >Pagos</a
-      >
-      <a routerLink="/reservas" class="nav-item">Reservas</a>
-      <a routerLink="/perfil" class="nav-item">Mi Perfil</a>
-    </nav>
-
-    <button type="button" class="avatar" aria-label="Cuenta de usuario">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path
-          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-        />
-      </svg>
-    </button>
-  </header>
+  <app-usuario-navbar />
 
   <main class="main">
     <h1 class="page-title">PAGO SERVICIO</h1>
 
+    @if (errorMsg(); as err) {
+      <p class="pagos-alerta" role="alert">{{ err }}</p>
+    }
+    @if (cargando()) {
+      <p class="pagos-alerta pagos-alerta--muted">Cargando…</p>
+    }
+
     <div class="pagos-layout">
       <section class="panel panel--form" aria-label="Datos del pago">
         <div class="field">
-          <label for="pago-placa">Ingrese Nr° Placa</label>
-          <input id="pago-placa" name="placa" [(ngModel)]="placa" type="text" autocomplete="off" />
+          <label for="pago-placa">Nr° Placa</label>
+          @if (ingresosPlacaOpciones.length > 1) {
+            <select
+              id="pago-placa"
+              name="placa"
+              [(ngModel)]="placa"
+              (ngModelChange)="onPlacaChange()"
+              [disabled]="cargando()"
+            >
+              @for (ing of ingresosPlacaOpciones; track ing.idIngreso) {
+                <option [value]="ing.placa">{{ ing.placa }}</option>
+              }
+            </select>
+          } @else {
+            <input
+              id="pago-placa"
+              name="placa"
+              [(ngModel)]="placa"
+              type="text"
+              autocomplete="off"
+              placeholder="Sin ingreso activo"
+              readonly
+              tabindex="-1"
+              aria-readonly="true"
+              [disabled]="cargando() || !ingresoActivoParqueadero()"
+            />
+          }
         </div>
         <div class="field">
           <label for="pago-fecha">Fecha</label>
-          <input id="pago-fecha" name="fecha" [(ngModel)]="fecha" type="text" placeholder="dd/mm/aaaa" />
+          <input
+            id="pago-fecha"
+            name="fecha"
+            [value]="fechaHoy"
+            type="text"
+            readonly
+            tabindex="-1"
+            aria-readonly="true"
+          />
         </div>
         <div class="field">
           <label for="pago-hora">Hora</label>
-          <input id="pago-hora" name="hora" [(ngModel)]="hora" type="text" placeholder="--:--" />
+          <input
+            id="pago-hora"
+            name="hora"
+            [(ngModel)]="hora"
+            type="text"
+            readonly
+            tabindex="-1"
+            placeholder="—"
+            aria-readonly="true"
+          />
         </div>
         <div class="field">
           <label for="pago-valor">Valor a Pagar</label>
-          <input id="pago-valor" name="valor" [(ngModel)]="valorForm" type="text" placeholder="Ej. 3600" inputmode="numeric" />
+          <input
+            id="pago-valor"
+            name="valor"
+            [value]="'$' + (valorFijo | number : '1.0-0') + ' COP'"
+            type="text"
+            readonly
+            tabindex="-1"
+            aria-readonly="true"
+          />
         </div>
         <div class="field field--medio">
           <div class="field-medio-head">
             <label for="pago-medio">Medio de pago</label>
-            <button type="button" class="btn-add-medio" (click)="toggleFormMedio()">+ Añadir medio de pago</button>
+            <button type="button" class="btn-add-medio" (click)="toggleFormMedio()">
+              + Añadir medio de pago
+            </button>
           </div>
-          @if (mediosRegistrados.length) {
-            <div class="field field--guardados">
-              <select
-                id="pago-medio-guardado"
-                name="medioGuardado"
-                [(ngModel)]="medioGuardadoId"
-                (ngModelChange)="aplicarMedioGuardado()"
-              >
-                <option value="">Seleccione…</option>
-                @for (m of mediosRegistrados; track m.id) {
-                  <option [value]="m.id">{{ m.tipo }} — {{ m.detalle }}</option>
-                }
-              </select>
-            </div>
+          <select
+            id="pago-medio"
+            name="medioSeleccionadoId"
+            [(ngModel)]="medioSeleccionadoId"
+            [disabled]="cargando() || !mediosRegistrados.length"
+          >
+            <option value="">Seleccione…</option>
+            @for (m of mediosRegistrados; track m.id) {
+              <option [value]="m.id">{{ m.tipo }} — {{ m.detalle }}</option>
+            }
+          </select>
+          @if (!mediosRegistrados.length && !cargando()) {
+            <p class="field-hint">Registra un medio en tu perfil o usa el botón de arriba.</p>
           }
-          
+
           @if (mostrarFormMedio) {
             <div class="inline-medio-form" (click)="$event.stopPropagation()">
               <p class="inline-medio-form__title">Añadir medio de pago</p>
@@ -95,11 +119,22 @@
                 </div>
                 <div class="inline-field">
                   <label for="nm-cvv">CVV</label>
-                  <input id="nm-cvv" name="nuevoCvv" [(ngModel)]="nuevoCvvMedio" type="password" maxlength="4" autocomplete="off" />
+                  <input
+                    id="nm-cvv"
+                    name="nuevoCvv"
+                    [(ngModel)]="nuevoCvvMedio"
+                    type="password"
+                    maxlength="4"
+                    autocomplete="off"
+                  />
                 </div>
                 <div class="inline-medio-form__actions">
-                  <button type="submit" class="btn-inline-anadir">Añadir</button>
-                  <button type="button" class="btn-inline-cancelar" (click)="mostrarFormMedio = false">Cerrar</button>
+                  <button type="submit" class="btn-inline-anadir" [disabled]="guardandoMedio()">
+                    {{ guardandoMedio() ? 'Guardando…' : 'Añadir' }}
+                  </button>
+                  <button type="button" class="btn-inline-cancelar" (click)="mostrarFormMedio = false">
+                    Cerrar
+                  </button>
                 </div>
               </form>
             </div>
@@ -110,8 +145,15 @@
       <aside class="pagos-aside" aria-label="Resumen y medios aceptados">
         <div class="resumen-card">
           <p class="resumen-label">Valor a pagar:</p>
-          <div class="resumen-monto">${{ valorMostrar | number : '1.0-0' }}</div>
-          <button type="button" class="btn-efectuar" (click)="efectuarPago()">Efectuar Pago</button>
+          <div class="resumen-monto">${{ valorFijo | number : '1.0-0' }}</div>
+          <button
+            type="button"
+            class="btn-efectuar"
+            (click)="efectuarPago()"
+            [disabled]="cargando() || procesandoPago() || !ingresoActivoParqueadero()"
+          >
+            {{ procesandoPago() ? 'Procesando…' : 'Efectuar Pago' }}
+          </button>
         </div>
 
         <div class="medios-card">
@@ -149,6 +191,10 @@
                 <td>{{ h.placa }}</td>
                 <td>{{ h.valor | number : '1.0-0' }}</td>
                 <td>{{ h.medio }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="cell-empty">No hay pagos registrados.</td>
               </tr>
             }
           </tbody>

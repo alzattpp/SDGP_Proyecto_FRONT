@@ -133,6 +133,13 @@
   background: #fdecef;
 }
 
+.plates-empty {
+  margin: 0;
+  padding: 0.75rem 0;
+  color: #5c6b7a;
+  font-size: 0.9375rem;
+}
+
 .perfil-alerta--muted {
   color: #556b82;
   background: #eef3f8;
@@ -422,14 +429,48 @@
 }
 
 .medio-card {
+  position: relative;
   min-width: 140px;
-  padding: 0.85rem 1.1rem;
+  padding: 0.85rem 1.1rem 0.75rem;
   background: #f4d73b;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.medio-card__head {
+  display: flex;
+  justify-content: flex-end;
+  margin: -0.35rem -0.35rem 0.15rem 0;
+}
+
+.medio-card__delete {
+  width: 1.65rem;
+  height: 1.65rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(198, 40, 40, 0.15);
+  color: #b71c1c;
+  font-size: 1.1rem;
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.medio-card__delete:hover:not(:disabled) {
+  background: #c62828;
+  color: #fff;
+}
+
+.medio-card__delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .medio-detalle {

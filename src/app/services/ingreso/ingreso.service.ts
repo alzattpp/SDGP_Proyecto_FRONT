@@ -22,7 +22,9 @@ export class IngresoService {
 
   // 🔹 GET todos los ingresos
   getIngresos(): Observable<any> {
-    return this.http.get(`${this.api}/getIngresos`);
+    return this.http.get(`${this.api}/getIngresos`, {
+      withCredentials: true,
+    });
   }
 
   // 🔹 GET ingreso por ID
@@ -32,12 +34,16 @@ export class IngresoService {
 
   // 🔹 CREATE ingreso (entrada al parqueadero)
   createIngreso(data: Ingreso): Observable<any> {
-    return this.http.post(`${this.api}/createIngreso`, data);
+    return this.http.post(`${this.api}/createIngreso`, data, {
+      withCredentials: true,
+    });
   }
 
   // 🔹 UPDATE salida (🔥 registrar salida del vehículo)
   registrarSalida(id: number): Observable<any> {
-    return this.http.put(`${this.api}/salida/${id}`, {});
+    return this.http.put(`${this.api}/salida/${id}`, {}, {
+      withCredentials: true,
+    });
   }
 
   // 🔹 DELETE ingreso (salida / baja del registro)

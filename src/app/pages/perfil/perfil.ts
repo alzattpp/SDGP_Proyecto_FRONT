@@ -1,9 +1,16 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { catchError, finalize, of } from 'rxjs';
 
+import { AuthService } from '../../auth/auth.service';
+import { UsuarioNavbarComponent } from '../../components/usuario-navbar/usuario-navbar';
+import { mapMediosPagoLista } from '../../services/mediospago/map-medios-pago';
+import { MedioPagoService } from '../../services/mediospago/mediospago';
 import { mapUsuarioMe } from '../../services/usuarios/map-usuario-me';
+import { extractNumeroUsosServicio } from '../../services/usuarios/usuario-stats.util';
 import { UsuarioService } from '../../services/usuarios/usuario.service';
+import { mapVehiculosLista, type PlacaItem } from '../../services/vehiculos/map-vehiculos';
+import { VehiculosService } from '../../services/vehiculos/vehiculos.service';
 
 export interface MedioPagoItem {
   id: string;
@@ -11,36 +18,39 @@ export interface MedioPagoItem {
   tipo: string;
 }
 
-export interface PlacaItem {
-  id: string;
-  placa: string;
-  marca: string;
-}
+export type { PlacaItem };
 
 @Component({
   selector: 'app-perfil',
-  imports: [RouterLink, RouterLinkActive, FormsModule],
+  imports: [UsuarioNavbarComponent, FormsModule],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css',
 })
 export class PerfilComponent implements OnInit {
+  private readonly authService = inject(AuthService);
   private readonly usuarioService = inject(UsuarioService);
+  private readonly vehiculosService = inject(VehiculosService);
+  private readonly medioPagoService = inject(MedioPagoService);
 
   readonly nombrePerfil = signal('Usuario');
   readonly documentoPerfil = signal('—');
   readonly tipoPerfil = signal('Usuario');
+  readonly numeroUsosServicio = signal<number | null>(null);
   readonly perfilCargando = signal(true);
   readonly perfilError = signal<string | null>(null);
+  readonly usosCargando = signal(true);
+  readonly placasCargando = signal(true);
+  readonly placasError = signal<string | null>(null);
+  readonly guardandoPlaca = signal(false);
+  readonly mediosCargando = signal(false);
+  readonly mediosError = signal<string | null>(null);
+  readonly guardandoMedio = signal(false);
+  readonly eliminandoMedioId = signal<string | null>(null);
 
-  mediosPago: MedioPagoItem[] = [
-    { id: '1', detalle: '1000-455-8800', tipo: 'VISA' },
-    { id: '2', detalle: 'usuario@gmail.com', tipo: 'PSE' },
-  ];
+  private idUsuario: number | null = null;
 
-  placas: PlacaItem[] = [
-    { id: '1', placa: 'AAA-000', marca: 'MAZDA' },
-    { id: '2', placa: 'ABC-123', marca: 'BMW' },
-  ];
+  mediosPago: MedioPagoItem[] = [];
+  placas: PlacaItem[] = [];
 
   modalMedios = false;
   mediosVista: 'lista' | 'anadir' = 'lista';
@@ -60,25 +70,106 @@ export class PerfilComponent implements OnInit {
   nuevaMarca = '';
 
   ngOnInit(): void {
+    this.authService.loadSession().subscribe({
+      next: (session) => {
+        if (!session?.idUsuario) {
+          this.perfilError.set('No se pudo validar tu sesión.');
+          this.perfilCargando.set(false);
+          this.usosCargando.set(false);
+          this.placasCargando.set(false);
+          return;
+        }
+        this.idUsuario = session.idUsuario;
+        this.cargarPerfil();
+        this.cargarContadorUsos();
+        this.cargarPlacas();
+      },
+      error: () => {
+        this.perfilError.set('No se pudo cargar el perfil. ¿Iniciaste sesión?');
+        this.perfilCargando.set(false);
+        this.usosCargando.set(false);
+        this.placasCargando.set(false);
+      },
+    });
+  }
+
+  private cargarPerfil(): void {
     this.usuarioService.getCurrentUsuario().subscribe({
       next: (raw) => {
         const v = mapUsuarioMe(raw);
         this.nombrePerfil.set(v.nombre);
         this.documentoPerfil.set(v.documento);
         this.tipoPerfil.set(v.tipo);
+        const usosMe = extractNumeroUsosServicio(raw);
+        if (usosMe != null) this.numeroUsosServicio.set(usosMe);
         this.perfilError.set(null);
         this.perfilCargando.set(false);
       },
       error: () => {
-        this.perfilError.set('No se pudo cargar el perfil. ¿Iniciaste sesión?');
+        this.perfilError.set('No se pudo cargar tu información.');
         this.perfilCargando.set(false);
       },
     });
   }
 
+  private cargarContadorUsos(): void {
+    this.usuarioService
+      .getCantidadLogins()
+      .pipe(
+        catchError(() => of(null)),
+        finalize(() => this.usosCargando.set(false)),
+      )
+      .subscribe((raw) => {
+        const n = extractNumeroUsosServicio(raw);
+        if (n != null) this.numeroUsosServicio.set(n);
+        else if (this.numeroUsosServicio() == null) this.numeroUsosServicio.set(0);
+      });
+  }
+
+  private cargarMediosPago(): void {
+    const id = this.idUsuario;
+    if (!id) return;
+    this.mediosError.set(null);
+    this.mediosCargando.set(true);
+    this.medioPagoService
+      .getMediosPagoByUsuario(id)
+      .pipe(
+        catchError(() => {
+          this.mediosError.set('No se pudieron cargar los medios de pago.');
+          return of([]);
+        }),
+        finalize(() => this.mediosCargando.set(false)),
+      )
+      .subscribe((raw) => {
+        this.mediosPago = mapMediosPagoLista(raw);
+      });
+  }
+
+  private cargarPlacas(): void {
+    this.placasError.set(null);
+    this.placasCargando.set(true);
+    this.vehiculosService
+      .getVehiculos()
+      .pipe(
+        catchError(() => {
+          this.placasError.set('No se pudieron cargar las placas registradas.');
+          return of([]);
+        }),
+        finalize(() => this.placasCargando.set(false)),
+      )
+      .subscribe((raw) => {
+        this.placas = mapVehiculosLista(raw);
+      });
+  }
+
+  private normalizarPlacaApi(s: string): string {
+    return s.trim().replace(/\s+/g, '').replace(/-/g, '').toUpperCase();
+  }
+
   openMedios(): void {
     this.modalMedios = true;
     this.mediosVista = 'lista';
+    this.cargarMediosPago();
   }
 
   closeMedios(): void {
@@ -98,15 +189,64 @@ export class PerfilComponent implements OnInit {
     this.mediosVista = 'lista';
   }
 
+  estaEliminandoMedio(id: string): boolean {
+    return this.eliminandoMedioId() === id;
+  }
+
+  eliminarMedio(m: MedioPagoItem): void {
+    const idMedio = Number(m.id);
+    if (!Number.isFinite(idMedio) || idMedio <= 0) {
+      this.mediosError.set('No se puede eliminar este medio de pago.');
+      return;
+    }
+    this.mediosError.set(null);
+    this.eliminandoMedioId.set(m.id);
+    this.medioPagoService
+      .deleteMedioPago(idMedio)
+      .pipe(finalize(() => this.eliminandoMedioId.set(null)))
+      .subscribe({
+        next: () => this.cargarMediosPago(),
+        error: (err) => {
+          const e = err as { error?: { message?: string; mensaje?: string } };
+          const b = e?.error;
+          this.mediosError.set(
+            b?.message ?? b?.mensaje ?? 'No se pudo eliminar el medio de pago.',
+          );
+        },
+      });
+  }
+
   guardarMedio(): void {
-    const detalle = this.numeroMedio.trim() || this.nombreTitularMedio.trim();
-    const tipo = (this.tipoMedio || 'Tarjeta').toUpperCase();
-    if (!detalle) return;
-    this.mediosPago = [
-      ...this.mediosPago,
-      { id: `${Date.now()}`, detalle, tipo },
-    ];
-    this.volverListaMedios();
+    const id = this.idUsuario;
+    if (!id) return;
+
+    const tipo = (this.tipoMedio || 'Tarjeta').trim().toUpperCase();
+    const numeroReferencia =
+      this.numeroMedio.trim() || this.nombreTitularMedio.trim();
+    if (!tipo || !numeroReferencia) return;
+
+    this.guardandoMedio.set(true);
+    this.medioPagoService
+      .createMedioPago({
+        idUsuario: id,
+        tipo,
+        numeroReferencia,
+        ...(this.cvvMedio.trim() ? { cvv: this.cvvMedio.trim() } : {}),
+      })
+      .pipe(finalize(() => this.guardandoMedio.set(false)))
+      .subscribe({
+        next: () => {
+          this.volverListaMedios();
+          this.cargarMediosPago();
+        },
+        error: (err) => {
+          const e = err as { error?: { message?: string; mensaje?: string } };
+          const b = e?.error;
+          this.mediosError.set(
+            b?.message ?? b?.mensaje ?? 'No se pudo registrar el medio de pago.',
+          );
+        },
+      });
   }
 
   openEditar(): void {
@@ -138,10 +278,30 @@ export class PerfilComponent implements OnInit {
   }
 
   guardarPlaca(): void {
-    const p = this.nuevaPlaca.trim().toUpperCase();
-    const m = this.nuevaMarca.trim().toUpperCase();
-    if (!p || !m) return;
-    this.placas = [...this.placas, { id: `${Date.now()}`, placa: p, marca: m }];
-    this.closePlaca();
+    const placa = this.normalizarPlacaApi(this.nuevaPlaca);
+    const marca = this.nuevaMarca.trim();
+    if (!placa || !marca) return;
+
+    this.guardandoPlaca.set(true);
+    this.vehiculosService
+      .createVehiculo({
+        placa,
+        marca,
+        ...(this.idUsuario ? { idUsuario: this.idUsuario } : {}),
+      })
+      .pipe(finalize(() => this.guardandoPlaca.set(false)))
+      .subscribe({
+        next: () => {
+          this.closePlaca();
+          this.cargarPlacas();
+        },
+        error: (err) => {
+          const e = err as { error?: { message?: string; mensaje?: string } };
+          const b = e?.error;
+          this.placasError.set(
+            b?.message ?? b?.mensaje ?? 'No se pudo registrar la placa.',
+          );
+        },
+      });
   }
 }

@@ -56,4 +56,11 @@ export class UsuarioService {
       withCredentials: true
     });
   }
+
+  /** Cantidad de logins del usuario autenticado (cookie/token). → { totalLogins } */
+  getCantidadLogins(): Observable<unknown> {
+    return this.http.get(`${this.api}/cantidadLogins`, {
+      withCredentials: true,
+    });
+  }
 }
