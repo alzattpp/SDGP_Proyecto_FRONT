@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class UsuarioService {
 
-  private api = 'http://localhost:3000/api/usuarios';
+  private api = 'https://upgrade-store.shop/api/usuarios';
 
   constructor(private http: HttpClient) {}
 

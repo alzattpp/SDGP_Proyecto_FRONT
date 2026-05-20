@@ -13,7 +13,7 @@ export interface Vehiculo {
   providedIn: 'root',
 })
 export class VehiculosService {
-  private api = 'http://localhost:3000/api/vehiculos';
+  private api = 'https://upgrade-store.shop/api/vehiculos';
 
   constructor(private http: HttpClient) {}
 

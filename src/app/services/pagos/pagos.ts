@@ -17,7 +17,7 @@ export interface Pago {
 })
 export class Pagos {
 
-  private api = 'http://localhost:3000/api/pagos';
+  private api = 'https://upgrade-store.shop/api/pagos';
 
   constructor(
     private http: HttpClient

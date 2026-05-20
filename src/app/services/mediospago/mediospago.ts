@@ -16,7 +16,7 @@ export interface mediosPago {
 })
 export class MedioPagoService {
 
-  private api = 'http://localhost:3000/api/mediopagos';
+  private api = 'https://upgrade-store.shop/api/mediopagos';
 
   constructor(private http: HttpClient) {}
 

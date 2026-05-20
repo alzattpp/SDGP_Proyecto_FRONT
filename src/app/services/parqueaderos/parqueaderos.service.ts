@@ -14,7 +14,7 @@ export interface Parqueadero {
 })
 export class ParqueaderoService {
 
-  private api = 'http://localhost:3000/api/parqueaderos';
+  private api = 'https://upgrade-store.shop/api/parqueaderos';
 
   constructor(private http: HttpClient) {}
 

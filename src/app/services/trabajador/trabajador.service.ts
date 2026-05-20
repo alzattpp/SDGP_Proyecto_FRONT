@@ -18,7 +18,7 @@ export interface Trabajador {
 })
 export class TrabajadorService {
 
-  private api = 'http://localhost:3000/api/trabajadores';
+  private api = 'https://upgrade-store.shop/api/trabajadores';
 
   constructor(private http: HttpClient) {}
 

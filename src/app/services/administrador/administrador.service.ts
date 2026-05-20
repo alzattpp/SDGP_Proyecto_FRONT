@@ -16,7 +16,7 @@ export interface Administrador {
 })
 export class AdministradorService {
 
-  private api = 'http://localhost:3000/api/administradores';
+  private api = 'https://upgrade-store.shop/api/administradores';
 
   constructor(private http: HttpClient) {}
 

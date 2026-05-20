@@ -16,7 +16,7 @@ export interface Ingreso {
 })
 export class IngresoService {
 
-  private api = 'http://localhost:3000/api/ingresos';
+  private api = 'https://upgrade-store.shop/api/ingresos';
 
   constructor(private http: HttpClient) {}
 
