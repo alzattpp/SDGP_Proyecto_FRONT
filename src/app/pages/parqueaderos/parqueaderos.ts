@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, map, of } from 'rxjs';
 
 import { UsuarioNavbarComponent } from '../../components/usuario-navbar/usuario-navbar';
@@ -23,7 +22,7 @@ export interface ParqueaderoCard {
 
 @Component({
   selector: 'app-parqueaderos',
-  imports: [RouterLink, UsuarioNavbarComponent],
+  imports: [UsuarioNavbarComponent],
   templateUrl: './parqueaderos.html',
   styleUrl: './parqueaderos.css',
 })
