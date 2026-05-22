@@ -4,6 +4,7 @@
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-overlay"></div>
     <div class="hero-inner">
+      <p class="hero-badge">Universidad Autónoma de Manizales</p>
       <h1 id="hero-title" class="hero-title">BIENVENIDO</h1>
       <p class="hero-text">
         Al Sistema de Gestión de Parqueaderos. Administra tu ingreso, consulta disponibilidad en tiempo real y
@@ -14,7 +15,18 @@
   </section>
 
   <section class="features" aria-label="Servicios">
+    <header class="section-intro">
+      <h2 class="section-intro__title">¿Qué necesitas hoy?</h2>
+      <p class="section-intro__text">
+        Accede rápido a la disponibilidad de cupos y al pago de tu parqueadero en el campus.
+      </p>
+    </header>
+
+    <div class="features__grid">
     <article class="card">
+      <div class="card-icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3H6v18h4v-6h3c3.31 0 6-2.69 6-6s-2.69-6-6-6zm.2 8H10V7h3.2c1.1 0 2 .9 2 2s-.9 2-2 2z"/></svg>
+      </div>
       <h2 class="card-title">Parqueaderos</h2>
       <p class="card-desc">
         Consulta la disponibilidad en tiempo real y conoce la ubicación de cada parqueadero.
@@ -23,11 +35,35 @@
     </article>
 
     <article class="card">
+      <div class="card-icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V6h16v12zM4 10h16v2H4z"/></svg>
+      </div>
       <h2 class="card-title">Pagos</h2>
       <p class="card-desc">Realiza y consulta tus pagos de forma rápida, segura y automatizada.</p>
       <a routerLink="/pagos" class="card-btn">Realizar Pago</a>
     </article>
+    </div>
+
+    <div class="highlights" aria-label="Beneficios">
+      <div class="highlight-item">
+        <strong>Disponibilidad en vivo</strong>
+        <span>Consulta cupos antes de llegar al campus.</span>
+      </div>
+      <div class="highlight-item">
+        <strong>Pagos seguros</strong>
+        <span>Historial y medios de pago en un solo lugar.</span>
+      </div>
+      <div class="highlight-item">
+        <strong>Experiencia UAM</strong>
+        <span>Diseñado para la comunidad universitaria.</span>
+      </div>
+    </div>
   </section>
 
-  <footer class="site-footer"></footer>
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__brand">SDGP · Sistema de Gestión de Parqueaderos</p>
+      <p class="site-footer__tagline">Universidad Autónoma de Manizales — Movilidad inteligente en campus</p>
+    </div>
+  </footer>
 </div>

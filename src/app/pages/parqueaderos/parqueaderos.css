@@ -8,7 +8,6 @@
   display: flex;
   flex-direction: column;
   font-family: 'Roboto', system-ui, sans-serif;
-  background: #fff;
   color: #222;
 }
 
@@ -112,22 +111,7 @@
   gap: 1.5rem;
 }
 
-.visitantes-banner {
-  margin: 0 0 0.25rem;
-}
-
-.visitantes-banner__link {
-  display: inline-block;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #0069a3;
-  text-decoration: none;
-  padding: 0.5rem 0;
-}
-
-.visitantes-banner__link:hover {
-  text-decoration: underline;
-}
+/* visitantes-banner: estilos globales en styles.css */
 
 .lot-status {
   margin: 0;
@@ -146,9 +130,16 @@
   align-items: center;
   gap: clamp(1rem, 3vw, 2rem);
   padding: clamp(1.25rem, 3vw, 1.75rem);
-  background: #ececec;
-  border-radius: 16px;
-  box-shadow: 0 4px 18px rgba(6, 42, 82, 0.08);
+  background: #fff;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(0, 105, 163, 0.1);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+}
+
+.lot-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .lot-info {
@@ -174,9 +165,10 @@
   padding: 0.65rem 0.85rem;
   font-size: 0.8125rem;
   line-height: 1.45;
-  color: #444;
-  background: #ddd;
-  border-radius: 10px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-brand);
 }
 
 .lot-visual {
@@ -199,11 +191,12 @@
 }
 
 .stat-pill {
-  background: #f4d73b;
-  border-radius: 14px;
+  background: linear-gradient(145deg, var(--color-accent) 0%, var(--color-accent-soft) 100%);
+  border-radius: var(--radius-md);
   padding: 1rem 1.25rem;
   min-width: 160px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .stat-row {

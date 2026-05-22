@@ -9,7 +9,8 @@
   gap: 1rem;
   min-height: 72px;
   padding: 0 clamp(1rem, 4vw, 3rem);
-  background: #0069a3;
+  background: var(--color-brand);
+  box-shadow: 0 2px 12px rgba(0, 52, 89, 0.15);
   flex-shrink: 0;
   font-family: 'Roboto', system-ui, sans-serif;
 }
@@ -64,8 +65,8 @@
 }
 
 .nav-item--active {
-  color: #f2d03b;
-  font-weight: 600;
+  color: var(--color-accent);
+  font-weight: 700;
 }
 
 .nav-item--active:hover {
@@ -113,8 +114,9 @@
   min-width: 11.5rem;
   padding: 0.35rem 0;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 105, 163, 0.1);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 

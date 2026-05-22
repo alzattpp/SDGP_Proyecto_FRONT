@@ -7,7 +7,9 @@
 
   <div class="lado-der">
     <form class="formulario" (ngSubmit)="iniciarSesion()">
+      <p class="login-eyebrow">SDGP · UAM</p>
       <h1 class="titulo">Login</h1>
+      <p class="login-subtitle">Accede con tu correo institucional</p>
 
       @if (errorMsg(); as err) {
         <p class="mensaje-error" role="alert">{{ err }}</p>

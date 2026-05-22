@@ -8,7 +8,6 @@
   display: flex;
   flex-direction: column;
   font-family: 'Roboto', system-ui, sans-serif;
-  background: #fff;
   color: #111;
 }
 
@@ -42,13 +41,20 @@
   gap: 0.5rem;
   padding: 0.55rem 1.15rem;
   border: none;
-  border-radius: 10px;
-  background: #0069a3;
+  border-radius: var(--radius-sm);
+  background: var(--color-brand);
   color: #fff;
   font-family: inherit;
   font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 105, 163, 0.22);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-anadir:hover:not(:disabled) {
+  background: var(--color-brand-dark);
+  transform: translateY(-1px);
 }
 
 .btn-anadir:disabled {
@@ -69,10 +75,11 @@
 }
 
 .table-wrap {
-  border: 2px solid #6eb8e0;
-  border-radius: 12px;
+  border: 1px solid rgba(0, 105, 163, 0.15);
+  border-radius: var(--radius-md);
   overflow-x: auto;
   background: #fff;
+  box-shadow: var(--shadow-sm);
 }
 
 .banner-error {

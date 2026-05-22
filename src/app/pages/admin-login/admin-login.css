@@ -15,6 +15,7 @@
   padding: clamp(1.25rem, 4vw, 2.5rem) 1rem;
   font-family: 'Roboto', system-ui, sans-serif;
   box-sizing: border-box;
+  background: transparent;
 }
 
 .bg {
@@ -45,15 +46,23 @@
   max-width: 400px;
   margin: auto;
   padding: 2rem 2rem 2.25rem;
-  
-  background: rgba(0, 105, 163, 0.38);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 16px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+  background: rgba(0, 105, 163, 0.42);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   text-align: center;
   box-sizing: border-box;
+}
+
+.admin-login-eyebrow {
+  margin: 0 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
 }
 
 .logo {
@@ -117,9 +126,9 @@
   align-self: center;
   margin-top: 0.75rem;
   padding: 0.65rem 2.25rem;
-  border-radius: 10px;
-  background: #f2d03b;
-  color: #0069a3;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: var(--color-brand);
   font-size: 0.9375rem;
   font-weight: 800;
   text-decoration: none;
@@ -129,10 +138,14 @@
   min-width: 200px;
   max-width: 100%;
   box-sizing: border-box;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
 }
 
 .btn-ingresar:hover {
-  filter: brightness(0.97);
+  filter: brightness(1.02);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
 }
 
 .btn-ingresar:disabled {
