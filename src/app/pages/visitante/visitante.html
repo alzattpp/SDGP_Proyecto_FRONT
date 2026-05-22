@@ -1,0 +1,86 @@
+<div class="page">
+  <header class="topbar">
+    <a routerLink="/" class="brand" aria-label="SDGP UAM — inicio">
+      <span class="brand-mark">
+        <img src="/assets/logo.png" alt="" width="48" height="48" />
+      </span>
+      <span class="brand-text">SDGP UAM</span>
+    </a>
+    <a routerLink="/" class="topbar__back">← Volver al login</a>
+  </header>
+
+  <main class="main">
+    <h1 class="page-title">Acceso visitante externo</h1>
+
+    @if (cargando()) {
+      <p class="status">Cargando información del parqueadero…</p>
+    }
+
+    <article class="lot-card">
+      <div class="lot-info">
+        <h2 class="lot-title">{{ nombre() }}</h2>
+        <p class="lot-line">Capacidad total: {{ capacidadTotal() }} parqueaderos</p>
+        <p class="lot-line">Cupos disponibles: {{ cuposDisponibles() }} parqueaderos</p>
+        <p class="lot-note">{{ notaVisitante }}</p>
+      </div>
+
+      <div class="lot-visual">
+        <img [src]="imagenCarro()" alt="" class="lot-car" width="280" height="120" />
+      </div>
+
+      <div class="lot-stats">
+        <div class="stat-pill">
+          <div class="stat-row">
+            <span class="stat-label">Ocupación:</span>
+            <span class="stat-value">{{ ocupacionPct() }}%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Disponibilidad:</span>
+            <span class="stat-value">{{ disponibilidadPct() }}%</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <section class="form-card">
+      <h2 class="form-card__title">Registro de vehículo</h2>
+      <p class="form-card__hint">
+        Costo del servicio: <strong>${{ costoVisitante | number : '1.0-0' }}</strong> (pago en taquilla). El ingreso lo registra el personal en taquilla.
+      </p>
+
+      @if (errorMsg(); as err) {
+        <p class="form-error" role="alert">{{ err }}</p>
+      }
+
+      <form class="form-visitante" (ngSubmit)="registrarVehiculo()">
+        <div class="campo">
+          <label for="marca">Marca del vehículo</label>
+          <input
+            id="marca"
+            name="marca"
+            type="text"
+            placeholder="Ej. Toyota"
+            autocomplete="off"
+            [(ngModel)]="marca"
+            [disabled]="enviando()"
+          />
+        </div>
+        <div class="campo">
+          <label for="placa">Placa</label>
+          <input
+            id="placa"
+            name="placa"
+            type="text"
+            placeholder="Ej. ABC123"
+            autocomplete="off"
+            [(ngModel)]="placa"
+            [disabled]="enviando()"
+          />
+        </div>
+        <button type="submit" class="btn-submit" [disabled]="enviando()">
+          {{ enviando() ? 'Registrando…' : 'Registrar vehículo' }}
+        </button>
+      </form>
+    </section>
+  </main>
+</div>

@@ -16,9 +16,11 @@ import { AdminParqueaderosComponent } from './pages/admin-parqueaderos/admin-par
 import { AdminTrabajadoresComponent } from './pages/admin-trabajadores/admin-trabajadores';
 import { AdminPagosComponent } from './pages/admin-pagos/admin-pagos';
 import { AdminReportesComponent } from './pages/admin-reportes/admin-reportes';
+import { VisitanteComponent } from './pages/visitante/visitante';
 
 export const routes: Routes = [
   { path: '', component: InicioComponent, canActivate: [guestGuard] },
+  { path: 'visitante', component: VisitanteComponent },
   {
     path: 'principal',
     component: PrincipalComponent,

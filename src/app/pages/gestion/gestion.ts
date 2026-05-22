@@ -2,11 +2,18 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { catchError, finalize, forkJoin, of } from 'rxjs';
 
+import {
+  ID_PARQUEADERO_BAVARIA,
+  ID_USUARIO_EXTERNO,
+  normalizarPlaca,
+} from '../../constants/visitante.const';
 import { TrabajadorNavbarComponent } from '../../components/trabajador-navbar/trabajador-navbar';
 import { IngresoService } from '../../services/ingreso/ingreso.service';
 import { formatearFechaHoraColombiaDesdeValor } from '../../utils/fecha-hora.util';
 import { ParqueaderoService } from '../../services/parqueaderos/parqueaderos.service';
 import { TrabajadorService } from '../../services/trabajador/trabajador.service';
+import { mapVehiculosLista } from '../../services/vehiculos/map-vehiculos';
+import { VehiculosService } from '../../services/vehiculos/vehiculos.service';
 
 export interface RegistroVehiculo {
   idIngreso: number;
@@ -36,6 +43,9 @@ export class GestionComponent implements OnInit {
   private readonly trabajadorService = inject(TrabajadorService);
   private readonly parqueaderoService = inject(ParqueaderoService);
   private readonly ingresoService = inject(IngresoService);
+  private readonly vehiculosService = inject(VehiculosService);
+
+  private readonly placasUsuarioExterno = signal<Set<string>>(new Set());
 
   readonly nombreParqueadero = signal('Parqueadero');
   readonly capacidadTotal = signal(0);
@@ -72,6 +82,7 @@ export class GestionComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.cargarPlacasUsuarioExterno();
     this.trabajadorService.getCurrentTrabajador().subscribe({
       next: (me) => {
         this.nombreParqueaderoDesdeMe = this.extraerNombreParqueaderoTrabajador(me);
@@ -265,11 +276,33 @@ export class GestionComponent implements OnInit {
     return '/assets/carroRojo.png';
   }
 
+  private cargarPlacasUsuarioExterno(): void {
+    this.vehiculosService.getVehiculos().subscribe({
+      next: (raw) => {
+        const lista = mapVehiculosLista(raw, ID_USUARIO_EXTERNO);
+        this.placasUsuarioExterno.set(
+          new Set(lista.map((v) => normalizarPlaca(v.placa))),
+        );
+      },
+      error: () => this.placasUsuarioExterno.set(new Set()),
+    });
+  }
+
+  private esPlacaUsuarioExterno(placa: string): boolean {
+    return this.placasUsuarioExterno().has(normalizarPlaca(placa));
+  }
+
   registrarEntrada(): void {
     const idP = this.idParqueadero();
     if (!idP) return;
     const placa = this.normalizarPlacaApi(this.placaEntrada);
     if (!placa) return;
+    if (this.esPlacaUsuarioExterno(placa) && idP !== ID_PARQUEADERO_BAVARIA) {
+      this.errorMsg.set(
+        'Las placas de visitantes externos solo pueden ingresar al Parqueadero Bavaria.',
+      );
+      return;
+    }
     const ya = this.registros().some(
       (r) => r.placa.replace(/\s/g, '').toUpperCase() === placa,
     );
