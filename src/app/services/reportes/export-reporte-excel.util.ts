@@ -6,6 +6,18 @@ export interface HojaExcel {
   filas: Record<string, string | number>[];
 }
 
+type GuardarBlobFn = (blob: Blob, nombreArchivo: string) => void;
+
+let guardarBlob: GuardarBlobFn = saveAs;
+
+export function setGuardarBlobHandler(handler: GuardarBlobFn): void {
+  guardarBlob = handler;
+}
+
+export function resetGuardarBlob(): void {
+  guardarBlob = saveAs;
+}
+
 export function descargarExcel(nombreArchivo: string, hojas: HojaExcel[]): void {
   const wb = XLSX.utils.book_new();
   for (const hoja of hojas) {
@@ -18,7 +30,7 @@ export function descargarExcel(nombreArchivo: string, hojas: HojaExcel[]): void 
   const blob = new Blob([buffer], {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   });
-  saveAs(blob, `${nombreArchivo}.xlsx`);
+  guardarBlob(blob, `${nombreArchivo}.xlsx`);
 }
 
 export function nombreArchivoReporte(prefijo: string): string {
