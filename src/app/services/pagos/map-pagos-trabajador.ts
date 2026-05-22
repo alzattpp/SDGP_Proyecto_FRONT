@@ -11,7 +11,9 @@ import {
 import {
   formatearFechaDesdeValor,
   formatearFechaHoraColombiaDesdeValor,
+  formatearFechaPagoDesdeRegistro,
   formatearHoraDesdeValor,
+  formatearHoraPagoDesdeRegistro,
 } from '../../utils/fecha-hora.util';
 
 export interface PagoTrabajadorRow {
@@ -270,9 +272,11 @@ function mapPagoAFilaAdmin(
 
   let placa = String(x['placa'] ?? ing?.['placa'] ?? ingresoInfo?.placa ?? '').trim();
   const monto = Number(x['monto'] ?? x['valor'] ?? 0);
-  const fechaRaw = x['fecha'] ?? x['fechaPago'] ?? x['createdAt'];
-  const fechaPago = formatearFechaDesdeValor(fechaRaw);
-  const horaPago = formatearHoraDesdeValor(fechaRaw) || '—';
+  const fechaPago = formatearFechaPagoDesdeRegistro(x, ing) || '—';
+  const horaPago =
+    formatearHoraPagoDesdeRegistro(x, ing) ||
+    (ingresoInfo?.horaSalida !== '—' ? ingresoInfo?.horaSalida : '') ||
+    '—';
   const horaIngreso =
     ingresoInfo?.horaIngreso ||
     formatearHoraDesdeValor(ing?.['horaIngreso'] ?? x['horaIngreso']) ||

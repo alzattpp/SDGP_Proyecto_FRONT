@@ -9,7 +9,10 @@ import {
 } from '../../constants/visitante.const';
 import { TrabajadorNavbarComponent } from '../../components/trabajador-navbar/trabajador-navbar';
 import { IngresoService } from '../../services/ingreso/ingreso.service';
-import { formatearFechaHoraColombiaDesdeValor } from '../../utils/fecha-hora.util';
+import {
+  formatearFechaDesdeValor,
+  formatearHoraDesdeValor,
+} from '../../utils/fecha-hora.util';
 import { ParqueaderoService } from '../../services/parqueaderos/parqueaderos.service';
 import { TrabajadorService } from '../../services/trabajador/trabajador.service';
 import { mapVehiculosLista } from '../../services/vehiculos/map-vehiculos';
@@ -234,13 +237,23 @@ export class GestionComponent implements OnInit {
     return true;
   }
 
+  private formatearHoraIngresoVista(v: unknown): string {
+    const fecha = formatearFechaDesdeValor(v);
+    const hora = formatearHoraDesdeValor(v);
+    if (fecha && fecha !== '—' && hora) {
+      return `${fecha} ${hora}`;
+    }
+    if (hora) return hora;
+    return String(v ?? '').trim();
+  }
+
   private mapIngresoFila(x: Record<string, unknown>): RegistroVehiculo {
     const id = this.extraerIdIngreso(x);
     const placa = String(x['placa'] ?? '');
     const hi = x['horaIngreso'];
-    let horaIngreso = formatearFechaHoraColombiaDesdeValor(hi);
+    let horaIngreso = this.formatearHoraIngresoVista(hi);
     if (!horaIngreso) {
-      horaIngreso = formatearFechaHoraColombiaDesdeValor(new Date());
+      horaIngreso = this.formatearHoraIngresoVista(new Date());
     }
     return {
       idIngreso: id,

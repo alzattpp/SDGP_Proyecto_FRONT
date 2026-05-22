@@ -2,9 +2,7 @@
   <app-usuario-navbar />
 
   <main class="main">
-    <p class="visitantes-banner">
-      <a routerLink="/parqueaderos-visitantes" class="visitantes-banner__link">Parqueaderos visitantes — solo Parqueadero Bavaria</a>
-    </p>
+  
     @if (cargando()) {
       <p class="lot-status">Cargando parqueaderos…</p>
     } @else if (errorMsg()) {

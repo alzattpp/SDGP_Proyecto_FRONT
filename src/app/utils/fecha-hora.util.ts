@@ -1,9 +1,17 @@
 
-const MYSQL_LOCAL = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?::(\d{2}))?$/;
-
-const ES_ISO = /^\d{4}-\d{2}-\d{2}T/i;
+const FECHA_HORA_API =
+  /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?$/i;
 
 const SOLO_HORA = /^(\d{1,2}):(\d{2})(?::\d{2})?$/;
+
+interface ComponentesFechaHora {
+  y: number;
+  mo: number;
+  d: number;
+  h: number;
+  mi: number;
+  s: number;
+}
 
 function pad2(n: number): string {
   return String(n).padStart(2, '0');
@@ -19,10 +27,21 @@ function aFechaDmy(y: number, m: number, d: number): string {
   return `${d}/${m}/${y}`;
 }
 
-function parseIsoLocal(s: string): Date | null {
-  if (!ES_ISO.test(s)) return null;
-  const d = new Date(s);
-  return Number.isNaN(d.getTime()) ? null : d;
+function extraerComponentesApi(s: string): ComponentesFechaHora | null {
+  const m = s.trim().match(FECHA_HORA_API);
+  if (!m) return null;
+  return {
+    y: Number(m[1]),
+    mo: Number(m[2]),
+    d: Number(m[3]),
+    h: Number(m[4]),
+    mi: Number(m[5]),
+    s: m[6] != null ? Number(m[6]) : 0,
+  };
+}
+
+function formatearDesdeComponentes(c: ComponentesFechaHora): string {
+  return `${c.y}-${pad2(c.mo)}-${pad2(c.d)} ${pad2(c.h)}:${pad2(c.mi)}:${pad2(c.s)}`;
 }
 
 function formatearDesdeDateLocal(d: Date): string {
@@ -32,16 +51,16 @@ function formatearDesdeDateLocal(d: Date): string {
 export function formatearFechaHoraColombiaDesdeValor(v: unknown): string {
   if (v == null || v === '') return '';
 
+  if (v instanceof Date) {
+    return formatearDesdeDateLocal(v);
+  }
+
   const s = String(v).trim();
   if (!s) return '';
 
-  const iso = parseIsoLocal(s);
-  if (iso) return formatearDesdeDateLocal(iso);
-
-  const mysql = s.match(MYSQL_LOCAL);
-  if (mysql) {
-    const sec = mysql[6] != null ? pad2(Number(mysql[6])) : '00';
-    return `${mysql[1]}-${mysql[2]}-${mysql[3]} ${mysql[4]}:${mysql[5]}:${sec}`;
+  const partes = extraerComponentesApi(s);
+  if (partes) {
+    return formatearDesdeComponentes(partes);
   }
 
   const hora = formatearHoraDesdeValor(v);
@@ -51,21 +70,20 @@ export function formatearFechaHoraColombiaDesdeValor(v: unknown): string {
 export function formatearHoraDesdeValor(v: unknown): string {
   if (v == null || v === '') return '';
 
-  const s = String(v).trim();
-  if (!s) return '';
-
-  const iso = parseIsoLocal(s);
-  if (iso) {
-    return iso.toLocaleTimeString('es-CO', {
+  if (v instanceof Date) {
+    return v.toLocaleTimeString('es-CO', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true,
     });
   }
 
-  const mysql = s.match(MYSQL_LOCAL);
-  if (mysql) {
-    return aHora12(Number(mysql[4]), Number(mysql[5]));
+  const s = String(v).trim();
+  if (!s) return '';
+
+  const partes = extraerComponentesApi(s);
+  if (partes) {
+    return aHora12(partes.h, partes.mi);
   }
 
   const solo = s.match(SOLO_HORA);
@@ -82,12 +100,9 @@ export function formatearFechaDesdeValor(v: unknown): string {
   const s = String(v).trim();
   if (/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)) return s.split(' ')[0] ?? s;
 
-  const iso = parseIsoLocal(s);
-  if (iso) return aFechaDmy(iso.getFullYear(), iso.getMonth() + 1, iso.getDate());
-
-  const mysql = s.match(MYSQL_LOCAL);
-  if (mysql) {
-    return aFechaDmy(Number(mysql[1]), Number(mysql[2]), Number(mysql[3]));
+  const partes = extraerComponentesApi(s);
+  if (partes) {
+    return aFechaDmy(partes.y, partes.mo, partes.d);
   }
 
   if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
@@ -96,29 +111,79 @@ export function formatearFechaDesdeValor(v: unknown): string {
     if (y && m && d) return aFechaDmy(y, m, d);
   }
 
-  try {
-    return new Date(s).toLocaleDateString('es-CO');
-  } catch {
-    return s;
-  }
+  return s;
 }
 
 export function tieneComponenteHora(v: unknown): boolean {
   const s = String(v ?? '').trim();
-  const iso = parseIsoLocal(s);
-  if (iso) {
-    return (
-      iso.getHours() > 0 ||
-      iso.getMinutes() > 0 ||
-      iso.getSeconds() > 0
-    );
-  }
-  const mysql = s.match(MYSQL_LOCAL);
-  if (mysql) {
-    const h = Number(mysql[4]);
-    const m = Number(mysql[5]);
-    const sec = Number(mysql[6] ?? 0);
-    return h > 0 || m > 0 || sec > 0;
+  const partes = extraerComponentesApi(s);
+  if (partes) {
+    return partes.h > 0 || partes.mi > 0 || partes.s > 0;
   }
   return false;
+}
+
+export function esHoraMedianochePlaceholder(v: unknown): boolean {
+  if (v == null || v === '') return false;
+  const partes = extraerComponentesApi(String(v).trim());
+  if (!partes) return false;
+  return partes.h === 0 && partes.mi === 0 && partes.s === 0;
+}
+
+function recRegistro(v: unknown): Record<string, unknown> | undefined {
+  return v && typeof v === 'object' ? (v as Record<string, unknown>) : undefined;
+}
+
+export function resolverValorFechaHoraPago(
+  pago: Record<string, unknown>,
+  ingreso?: Record<string, unknown> | null,
+): unknown {
+  const ing = ingreso ?? recRegistro(pago['ingreso']);
+
+  const candidatos = [
+    pago['fechaHoraPago'],
+    pago['fecha_hora_pago'],
+    pago['fechaHora'],
+    ing?.['horaSalida'],
+    ing?.['hora_salida'],
+    pago['horaPago'],
+    pago['hora_pago'],
+    pago['hora'],
+    pago['fechaPago'],
+    pago['fecha'],
+    pago['createdAt'],
+    pago['updatedAt'],
+  ];
+
+  for (const v of candidatos) {
+    if (v == null || v === '') continue;
+    const s = String(v).trim();
+    if (SOLO_HORA.test(s)) continue;
+    if (esHoraMedianochePlaceholder(v)) continue;
+    if (extraerComponentesApi(s)) return v;
+  }
+
+  return null;
+}
+
+export function formatearHoraPagoDesdeRegistro(
+  pago: Record<string, unknown>,
+  ingreso?: Record<string, unknown> | null,
+): string {
+  const v = resolverValorFechaHoraPago(pago, ingreso);
+  return v ? formatearHoraDesdeValor(v) : '';
+}
+
+export function formatearFechaPagoDesdeRegistro(
+  pago: Record<string, unknown>,
+  ingreso?: Record<string, unknown> | null,
+): string {
+  const v = resolverValorFechaHoraPago(pago, ingreso);
+  if (v) {
+    const f = formatearFechaDesdeValor(v);
+    if (f && f !== '—') return f;
+  }
+  return formatearFechaDesdeValor(
+    pago['fecha'] ?? pago['fechaPago'] ?? pago['createdAt'],
+  );
 }

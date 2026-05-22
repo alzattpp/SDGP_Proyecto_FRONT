@@ -1,12 +1,11 @@
 import type { PagoHistorial } from '../../pages/pagos/pagos';
 import {
-  formatearFechaDesdeValor,
-  formatearHoraDesdeValor,
-  tieneComponenteHora,
+  formatearFechaPagoDesdeRegistro,
+  formatearHoraPagoDesdeRegistro,
 } from '../../utils/fecha-hora.util';
 
 export interface PagosHistorialContext {
-  ingresosPorId: Map<number, { placa: string; horaIngreso: string }>;
+  ingresosPorId: Map<number, { placa: string; horaSalida: string }>;
   mediosPorId: Map<number, { tipo: string; detalle: string }>;
 }
 
@@ -64,21 +63,11 @@ export function mapPagosHistorial(
       let placa = String(x['placa'] ?? ing?.['placa'] ?? '').trim();
       const monto = Number(x['monto'] ?? x['valor'] ?? 0);
 
-      const fechaRaw = x['fecha'] ?? x['fechaPago'] ?? x['createdAt'];
-      const fecha = formatearFechaDesdeValor(fechaRaw);
+      const fecha = formatearFechaPagoDesdeRegistro(x, ing);
 
-      let hora = '';
-      if (ctx && idIngreso > 0) {
-        hora = ctx.ingresosPorId.get(idIngreso)?.horaIngreso ?? '';
-      }
-      if (!hora) {
-        hora =
-          formatearHoraDesdeValor(
-            ing?.['horaIngreso'] ?? x['horaIngreso'] ?? x['hora'] ?? x['horaPago'],
-          ) || '';
-      }
-      if (!hora && tieneComponenteHora(fechaRaw)) {
-        hora = formatearHoraDesdeValor(fechaRaw);
+      let hora = formatearHoraPagoDesdeRegistro(x, ing);
+      if (!hora && ctx && idIngreso > 0) {
+        hora = ctx.ingresosPorId.get(idIngreso)?.horaSalida ?? '';
       }
 
       let medio = etiquetaMedio(

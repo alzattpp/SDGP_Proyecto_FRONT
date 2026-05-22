@@ -66,14 +66,18 @@ export interface IngresoResumen {
 
 export function buildIngresosLookup(
   raw: unknown,
-): Map<number, { placa: string; horaIngreso: string }> {
-  const map = new Map<number, { placa: string; horaIngreso: string }>();
+): Map<number, { placa: string; horaSalida: string }> {
+  const map = new Map<number, { placa: string; horaSalida: string }>();
   for (const x of asIngresosArray(raw)) {
     const resumen = mapIngresoResumen(x);
     if (resumen) {
+      const horaSalida =
+        formatearHoraDesdeValor(
+          x['horaSalida'] ?? x['hora_salida'] ?? rec(x['ingreso'])?.['horaSalida'],
+        ) || '';
       map.set(resumen.idIngreso, {
         placa: resumen.placa,
-        horaIngreso: resumen.horaIngreso,
+        horaSalida,
       });
     }
   }
