@@ -55,7 +55,7 @@ export class PagosComponent implements OnInit {
   private readonly ingresoService = inject(IngresoService);
   private readonly vehiculosService = inject(VehiculosService);
 
-  /** Parqueadero Bavaria — pagos solo con ingreso activo aquí */
+  
   readonly idParqueaderoPago = 2;
   readonly valorFijo = 3500;
   readonly fechaHoy = new Date().toLocaleDateString('es-CO');

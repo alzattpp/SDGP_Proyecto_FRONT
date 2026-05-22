@@ -5,7 +5,6 @@ import { map, take } from 'rxjs';
 import { AuthService } from './auth.service';
 import { loginRouteForRoles, type AppRole } from './auth-role.util';
 
-/** Solo permite acceso si hay sesión válida y el rol del token está en la lista. */
 export function roleGuard(allowedRoles: AppRole[]): CanActivateFn {
   return () => {
     const auth = inject(AuthService);
@@ -27,7 +26,6 @@ export function roleGuard(allowedRoles: AppRole[]): CanActivateFn {
   };
 }
 
-/** Páginas de login: si ya hay sesión, redirige al home del rol. */
 export const guestGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
@@ -41,7 +39,6 @@ export const guestGuard: CanActivateFn = () => {
   );
 };
 
-/** Login admin: si ya es admin, va al panel; si es otro rol, a su home. */
 export const adminGuestGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);

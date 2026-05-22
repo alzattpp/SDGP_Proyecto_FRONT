@@ -20,31 +20,25 @@ export class AdministradorService {
 
   constructor(private http: HttpClient) {}
 
-  // 🔹 GET todos los administradores
   getAdministradores(): Observable<any> {
     return this.http.get(`${this.api}/getAdministradores`);
   }
 
-  // 🔹 GET administrador por ID
   getAdministradorById(id: number): Observable<any> {
     return this.http.get(`${this.api}/findAdministradorById/${id}`);
   }
 
-  // 🔹 CREATE administrador
   createAdministrador(data: Administrador): Observable<any> {
     return this.http.post(`${this.api}/createAdministrador`, data);
   }
 
-  // 🔹 UPDATE administrador
   updateAdministrador(id: number, data: Partial<Administrador>): Observable<any> {
     return this.http.put(`${this.api}/updateAdministrador/${id}`, data);
   }
 
-  // 🔹 DELETE administrador (usa idUsuario 🔥)
   deleteAdministrador(idUsuario: number): Observable<any> {
     return this.http.delete(`${this.api}/delete/${idUsuario}`);
   }
-
 
 getCurrentAdministrador(): Observable<any> {
   return this.http.get(`${this.api}/me`, {

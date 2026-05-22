@@ -29,7 +29,7 @@
   position: fixed;
   inset: 0;
   z-index: -1;
-  /* Azul institucional translúcido: deja ver bien la foto */
+  
   background: linear-gradient(
     160deg,
     rgba(0, 105, 163, 0.4) 0%,
@@ -45,7 +45,7 @@
   max-width: 400px;
   margin: auto;
   padding: 2rem 2rem 2.25rem;
-  /* Tarjeta azul translúcida: se ve el fondo a través */
+  
   background: rgba(0, 105, 163, 0.38);
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
@@ -85,7 +85,7 @@
   text-align: left;
 }
 
-/* Mismo patrón que el login principal: solo línea inferior, sin “cajas” grises */
+
 .field input {
   width: 100%;
   padding: 10px 0;
@@ -105,7 +105,7 @@
 }
 
 .field input:focus {
-  /* Acento visible sobre el vidrio azul (el login general usa #0069a3 sobre fondo claro) */
+  
   border-bottom-color: #f2d03b;
   box-shadow: none;
 }

@@ -22,7 +22,7 @@ export class AuthService {
   private sessionCache: AuthSession | null | undefined;
   private sessionRequest$?: Observable<AuthSession | null>;
 
-  /** Carga sesión desde cookie/token (GET /me según rol). */
+  
   loadSession(force = false): Observable<AuthSession | null> {
     if (!force && this.sessionCache !== undefined) {
       return of(this.sessionCache);
@@ -65,7 +65,7 @@ export class AuthService {
     return homeRouteForRole(rol);
   }
 
-  /** Tras login: rol del token debe coincidir con la ruta destino. */
+  
   resolveRolFromLoginResponse(raw: unknown): AppRole | null {
     return resolveRolFromResponse(raw);
   }

@@ -21,7 +21,6 @@ function extraerIdUsuarioVehiculo(x: Record<string, unknown>): number {
   return Number.isFinite(id) && id > 0 ? id : 0;
 }
 
-/** Normaliza `{ data: [{ placa, marca, idUsuario }] }`. Si `idUsuario` se pasa, solo vehículos de ese usuario. */
 export function mapVehiculosLista(raw: unknown, idUsuario?: number): PlacaItem[] {
   return asArray(raw)
     .filter((x) => {

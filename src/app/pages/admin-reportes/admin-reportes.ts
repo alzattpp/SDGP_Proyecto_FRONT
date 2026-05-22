@@ -22,7 +22,6 @@ import {
 } from '../../services/reportes/map-reportes';
 import { Reportes } from '../../services/reportes/reportes';
 
-/** 0 = todos los parqueaderos (endpoints sin id). */
 export const REPORTE_TODOS_PARQUEADEROS = 0;
 
 export interface ParqueaderoOpcionReporte {

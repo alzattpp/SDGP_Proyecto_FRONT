@@ -1,6 +1,6 @@
 @import 'sweetalert2/dist/sweetalert2.min.css';
 
-/* Reset de márgenes del navegador — evita franjas blancas a los lados */
+
 *,
 *::before,
 *::after {
@@ -25,7 +25,7 @@ app-root {
   width: 100%;
 }
 
-/* Texto de marca junto al logo en todas las barras de navegación */
+
 .navbar .brand {
   display: flex;
   align-items: center;

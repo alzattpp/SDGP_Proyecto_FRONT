@@ -37,9 +37,6 @@ export class Reportes {
     private http: HttpClient
   ) {}
 
-
-
-  // 🔹 ocupacion todos
   getOcupacion(): Observable<any>{
 
     return this.http.get(
@@ -51,9 +48,6 @@ export class Reportes {
 
   }
 
-
-
-  // 🔹 ocupacion por parqueadero
   getOcupacionByParqueadero(
     idParqueadero:number
   ):Observable<any>{
@@ -67,9 +61,6 @@ export class Reportes {
 
   }
 
-
-
-  // 🔹 ingresos todos
   getIngresosReporte():Observable<any>{
 
     return this.http.get(
@@ -81,9 +72,6 @@ export class Reportes {
 
   }
 
-
-
-  // 🔹 ingresos por parqueadero
   getIngresosReporteByParqueadero(
     idParqueadero:number
   ):Observable<any>{
@@ -97,9 +85,6 @@ export class Reportes {
 
   }
 
-
-
-  // 🔹 pagos
   getPagosReporte():Observable<any>{
 
     return this.http.get(

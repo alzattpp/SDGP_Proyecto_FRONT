@@ -12,7 +12,7 @@
   color: #1a1a1a;
 }
 
-/* —— Navbar —— */
+
 .navbar {
   display: flex;
   align-items: center;
@@ -105,7 +105,7 @@
   height: 26px;
 }
 
-/* —— Hero —— */
+
 .hero {
   position: relative;
   min-height: min(52vh, 520px);
@@ -155,7 +155,7 @@
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
 }
 
-/* —— Tarjetas —— */
+
 .features {
   display: flex;
   flex-wrap: wrap;
@@ -218,7 +218,7 @@
   transform: translateY(0);
 }
 
-/* —— Footer —— */
+
 .site-footer {
   min-height: 56px;
   background: #e8e8e8;

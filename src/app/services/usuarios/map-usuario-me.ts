@@ -1,4 +1,4 @@
-/** Normaliza GET /me: `{ data: { nombreCompleto, documento, ... }, rol }` u otras variantes. */
+
 export interface UsuarioMeVista {
   nombre: string;
   documento: string;
@@ -29,7 +29,6 @@ function formatRol(rol: string): string {
   return r.charAt(0).toUpperCase() + r.slice(1).toLowerCase();
 }
 
-/** Extrae el objeto usuario y el rol desde la respuesta del API. */
 function extractPayload(raw: unknown): { u: Record<string, unknown>; rol: string } {
   const r = rec(raw) ?? {};
   const data = rec(r['data']);

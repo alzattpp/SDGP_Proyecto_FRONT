@@ -7,7 +7,6 @@ function asArray(raw: unknown): Record<string, unknown>[] {
   return [];
 }
 
-/** Cantidad de logins / usos del servicio desde /me, findUsuario o contadorLogins. */
 export function extractNumeroUsosServicio(raw: unknown): number | null {
   const { u } = extractMePayload(raw);
   const r = rec(raw) ?? {};

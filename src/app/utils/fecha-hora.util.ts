@@ -1,10 +1,8 @@
-/** MySQL sin zona horaria: 2026-05-18 20:08:30 */
+
 const MYSQL_LOCAL = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?::(\d{2}))?$/;
 
-/** ISO del API: 2026-05-19T01:08:30.000Z */
 const ES_ISO = /^\d{4}-\d{2}-\d{2}T/i;
 
-/** Solo hora: 20:08 o 20:08:30 */
 const SOLO_HORA = /^(\d{1,2}):(\d{2})(?::\d{2})?$/;
 
 function pad2(n: number): string {
@@ -31,9 +29,6 @@ function formatearDesdeDateLocal(d: Date): string {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
 }
 
-/**
- * Fecha y hora en hora local del navegador (Colombia), formato: 2026-05-18 20:08:30
- */
 export function formatearFechaHoraColombiaDesdeValor(v: unknown): string {
   if (v == null || v === '') return '';
 
@@ -53,11 +48,6 @@ export function formatearFechaHoraColombiaDesdeValor(v: unknown): string {
   return hora || s;
 }
 
-/**
- * Hora legible en hora local.
- * - ISO UTC (…Z): convierte a hora Colombia del navegador.
- * - MySQL con espacio: usa HH:mm tal cual viene de la BD.
- */
 export function formatearHoraDesdeValor(v: unknown): string {
   if (v == null || v === '') return '';
 
@@ -86,7 +76,6 @@ export function formatearHoraDesdeValor(v: unknown): string {
   return '';
 }
 
-/** Fecha dd/mm/yyyy en hora local. */
 export function formatearFechaDesdeValor(v: unknown): string {
   if (v == null || v === '') return '—';
 
@@ -114,7 +103,6 @@ export function formatearFechaDesdeValor(v: unknown): string {
   }
 }
 
-/** True si el valor trae hora distinta de 00:00:00. */
 export function tieneComponenteHora(v: unknown): boolean {
   const s = String(v ?? '').trim();
   const iso = parseIsoLocal(s);

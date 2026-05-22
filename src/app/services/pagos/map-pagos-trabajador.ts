@@ -41,7 +41,6 @@ function asPagosArray(raw: unknown): Record<string, unknown>[] {
   return [];
 }
 
-/** Incluye PENDIENTE, CONFIRMADO, etc. (como devuelve el API). Excluye solo rechazados/anulados. */
 function esPagoListable(x: Record<string, unknown>): boolean {
   const est = String(x['estado'] ?? '').toLowerCase().trim();
   if (!est) return true;
@@ -66,7 +65,7 @@ function etiquetaEstadoTabla(x: Record<string, unknown>): string {
   if (est.includes('pend')) return 'Pendiente';
   return est ? est.charAt(0).toUpperCase() + est.slice(1) : 'Confirmado';
 }
-/** Igual que gestión: sin idParqueadero en el JSON se asume el del trabajador. */
+
 function perteneceAlParqueadero(
   x: Record<string, unknown>,
   idParqueadero: number,
@@ -319,7 +318,6 @@ function mapPagoAFilaAdmin(
   };
 }
 
-/** Todos los pagos (sin filtrar por parqueadero), para administración. */
 export function mapPagosAdminLista(
   rawPagos: unknown,
   rawIngresos: unknown,

@@ -23,14 +23,12 @@ export class Pagos {
     private http: HttpClient
   ) {}
 
-  // 🔹 GET todos los pagos
   getPagos(): Observable<any> {
     return this.http.get(`${this.api}/getPagos`, {
       withCredentials: true,
     });
   }
 
-  // 🔹 GET pago por ID
   getPagoById(
     id:number
   ): Observable<any> {
@@ -41,7 +39,6 @@ export class Pagos {
 
   }
 
-  // 🔹 GET pagos por usuario
   getPagosByUsuario(
     idUsuario:number
   ): Observable<any> {
@@ -55,7 +52,6 @@ export class Pagos {
 
   }
 
-  // 🔹 CREATE pago
   createPago(
     data:Pago
   ): Observable<any>{
@@ -70,7 +66,6 @@ export class Pagos {
 
   }
 
-  // 🔹 UPDATE pago
   updatePago(
     id:number,
     data:Pago
@@ -86,7 +81,6 @@ export class Pagos {
 
   }
 
-  // 🔹 DELETE pago
   deletePago(
     id:number
   ): Observable<any>{

@@ -5,7 +5,6 @@ import { catchError, finalize, of } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { UsuarioService } from '../../services/usuarios/usuario.service';
 
-/** Barra superior compartida del rol trabajador (mockups UAM). */
 @Component({
   selector: 'app-trabajador-navbar',
   imports: [RouterLink, RouterLinkActive],

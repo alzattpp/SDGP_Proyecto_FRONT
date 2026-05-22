@@ -1,11 +1,10 @@
-/** Roles de la aplicación alineados con el JWT / cookie del API. */
+
 export type AppRole = 'usuario' | 'trabajador' | 'administrador';
 
 export function rec(v: unknown): Record<string, unknown> | undefined {
   return v && typeof v === 'object' ? (v as Record<string, unknown>) : undefined;
 }
 
-/** Extrae `{ data, rol }` de cualquier respuesta /me o login. */
 export function extractMePayload(raw: unknown): { u: Record<string, unknown>; rol: string } {
   const r = rec(raw) ?? {};
   const data = rec(r['data']);
@@ -22,7 +21,6 @@ export function extractMePayload(raw: unknown): { u: Record<string, unknown>; ro
   return { u: r, rol };
 }
 
-/** Normaliza el string de rol del token/API al rol de rutas. */
 export function normalizeAppRol(rolRaw: string): AppRole | null {
   const r = rolRaw.trim().toLowerCase();
   if (!r) return 'usuario';

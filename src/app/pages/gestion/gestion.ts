@@ -239,11 +239,7 @@ export class GestionComponent implements OnInit {
     };
   }
 
-  /**
-   * Algunos endpoints devuelven el id con distinto nombre:
-   * idIngreso | id_ingreso | idingreso.
-   * Evitamos usar `id` genérico para no tomar ids de otras entidades.
-   */
+  
   private extraerIdIngreso(x: Record<string, unknown>): number {
     const val =
       x['idIngreso'] ??
@@ -257,7 +253,7 @@ export class GestionComponent implements OnInit {
     return Number.isFinite(id) && id > 0 ? id : 0;
   }
 
-  /** Igual que Postman: placa sin espacios, mayúsculas. */
+  
   private normalizarPlacaApi(s: string): string {
     return s.trim().replace(/\s+/g, '').toUpperCase();
   }
@@ -283,7 +279,7 @@ export class GestionComponent implements OnInit {
     }
     this.errorMsg.set(null);
     this.registrandoEntrada.set(true);
-    // Igual que Postman: { placa, idParqueadero } usando el id extraido de /trabajadores/me
+
     this.ingresoService
       .createIngreso({ placa, idParqueadero: idP })
       .pipe(finalize(() => this.registrandoEntrada.set(false)))

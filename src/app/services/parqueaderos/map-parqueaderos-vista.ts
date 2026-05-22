@@ -164,7 +164,6 @@ export function mergeAdminParqueaderoStats(
   };
 }
 
-/** Verde ≤30 %, amarillo 31–70 %, rojo ≥71 % (ocupación). */
 export function imagenCarroPorOcupacion(ocupacionPct: number): string {
   if (ocupacionPct <= 30) return '/assets/carroVerde.png';
   if (ocupacionPct <= 70) return '/assets/carroAmarillo.png';
