@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, input, signal } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { catchError, finalize, of } from 'rxjs';
 
@@ -15,8 +15,6 @@ export class AdminNavbarComponent {
   private readonly usuarioService = inject(UsuarioService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-
-  readonly topLabel = input<string | null>(null);
 
   readonly menuAbierto = signal(false);
 

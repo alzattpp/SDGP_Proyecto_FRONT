@@ -28,11 +28,6 @@ export class UsuarioNavbarComponent {
     return p === '/parqueaderos' || p === '/parqueaderos-visitantes';
   }
 
-  navReservasActivo(): boolean {
-    const p = this.router.url.split('?')[0];
-    return p === '/reservas' || p === '/ver-reservas';
-  }
-
   toggleMenu(event: Event): void {
     event.stopPropagation();
     this.menuAbierto.update((v) => !v);

@@ -1,6 +1,34 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { catchError, finalize, of } from 'rxjs';
+
 import { AdminNavbarComponent } from '../../components/admin-navbar/admin-navbar';
+import {
+  asParqueaderosArray,
+  mapParqueaderoListaItem,
+} from '../../services/parqueaderos/map-parqueaderos-vista';
+import { ParqueaderoService } from '../../services/parqueaderos/parqueaderos.service';
+import {
+  descargarExcel,
+  nombreArchivoReporte,
+} from '../../services/reportes/export-reporte-excel.util';
+import {
+  ingresosAFilasExcel,
+  mapIngresosReporte,
+  mapOcupacionReporte,
+  mapPagosReporte,
+  ocupacionAFilasExcel,
+  pagosAFilasExcel,
+} from '../../services/reportes/map-reportes';
+import { Reportes } from '../../services/reportes/reportes';
+
+/** 0 = todos los parqueaderos (endpoints sin id). */
+export const REPORTE_TODOS_PARQUEADEROS = 0;
+
+export interface ParqueaderoOpcionReporte {
+  id: number;
+  nombre: string;
+}
 
 @Component({
   selector: 'app-admin-reportes',
@@ -8,96 +36,122 @@ import { AdminNavbarComponent } from '../../components/admin-navbar/admin-navbar
   templateUrl: './admin-reportes.html',
   styleUrl: './admin-reportes.css',
 })
-export class AdminReportesComponent {
-  parqueaderoSel = 'Biblioteca';
+export class AdminReportesComponent implements OnInit {
+  private readonly reportesService = inject(Reportes);
+  private readonly parqueaderoService = inject(ParqueaderoService);
 
-  readonly opciones = ['Biblioteca', 'Cupula', 'Bavaria', 'Todos'];
+  readonly parqueaderoOpciones = signal<ParqueaderoOpcionReporte[]>([
+    { id: REPORTE_TODOS_PARQUEADEROS, nombre: 'Todos' },
+  ]);
+  readonly cargandoParqueaderos = signal(true);
+  readonly generando = signal(false);
+  readonly errorMsg = signal<string | null>(null);
 
-  modalReporte = false;
-  repTipo = '';
-  repConFiltroParqueadero = true;
-  repParqueadero = '';
-  repFechaDesde = '';
-  repFechaHasta = '';
-  repFormato: 'PDF' | 'Excel' = 'PDF';
-  repIncluirGraficos = true;
-  repVistaPrevia = '';
-  repMostrarResultado = false;
+  parqueaderoOcupacionId = REPORTE_TODOS_PARQUEADEROS;
+  parqueaderoIngresosId = REPORTE_TODOS_PARQUEADEROS;
 
-  private hoyIso(): string {
-    return new Date().toISOString().slice(0, 10);
+  ngOnInit(): void {
+    this.cargarParqueaderos();
   }
 
-  abrirGenerar(tipo: string, conFiltro: boolean): void {
-    this.repTipo = tipo;
-    this.repConFiltroParqueadero = conFiltro;
-    this.repParqueadero = conFiltro ? this.parqueaderoSel : 'Todos';
-    this.repFechaDesde = this.hoyIso();
-    this.repFechaHasta = this.hoyIso();
-    this.repFormato = 'PDF';
-    this.repIncluirGraficos = true;
-    this.repVistaPrevia = '';
-    this.repMostrarResultado = false;
-    this.modalReporte = true;
+  private cargarParqueaderos(): void {
+    this.cargandoParqueaderos.set(true);
+    this.parqueaderoService
+      .getParqueaderos()
+      .pipe(
+        catchError(() => {
+          this.errorMsg.set('No se pudieron cargar los parqueaderos para los filtros.');
+          return of([]);
+        }),
+        finalize(() => this.cargandoParqueaderos.set(false)),
+      )
+      .subscribe((raw) => {
+        const items = asParqueaderosArray(raw)
+          .map((p) => mapParqueaderoListaItem(p))
+          .filter((x): x is NonNullable<typeof x> => x != null)
+          .map((p) => ({ id: p.idParqueadero, nombre: p.nombre }));
+
+        this.parqueaderoOpciones.set([
+          { id: REPORTE_TODOS_PARQUEADEROS, nombre: 'Todos' },
+          ...items,
+        ]);
+      });
   }
 
-  cerrarModal(): void {
-    this.modalReporte = false;
+  generarOcupacion(): void {
+    const id = this.parqueaderoOcupacionId;
+    const req =
+      id > 0
+        ? this.reportesService.getOcupacionByParqueadero(id)
+        : this.reportesService.getOcupacion();
+
+    this.ejecutarDescarga(req, (raw) => {
+      const filas = ocupacionAFilasExcel(mapOcupacionReporte(raw));
+      const sufijo =
+        id > 0
+          ? this.etiquetaParqueadero(id).replace(/\s+/g, '-').toLowerCase()
+          : 'todos';
+      descargarExcel(nombreArchivoReporte(`ocupacion-${sufijo}`), [
+        { nombre: 'Ocupación', filas },
+      ]);
+    });
   }
 
-  ejecutarConsulta(): void {
-    const filtroTxt = this.repConFiltroParqueadero ? this.repParqueadero : 'Todos los parqueaderos';
-    const graf = this.repIncluirGraficos ? 'Sí' : 'No';
+  generarIngresos(): void {
+    const id = this.parqueaderoIngresosId;
+    const req =
+      id > 0
+        ? this.reportesService.getIngresosReporteByParqueadero(id)
+        : this.reportesService.getIngresosReporte();
 
-    let cuerpo = '';
-    switch (this.repTipo) {
-      case 'Ocupación actual':
-        cuerpo = [
-          `Parqueadero(s): ${filtroTxt}`,
-          `Cupos totales (simulado): 128`,
-          `Ocupados: 74 (58 %) · Libres: 54 (42 %)`,
-          `Mayor ocupación hoy: 11:00 – 13:00`,
-        ].join('\n');
-        break;
-      case 'Ingresos vehiculares':
-        cuerpo = [
-          `Rango: ${this.repFechaDesde} → ${this.repFechaHasta}`,
-          `Filtro: ${filtroTxt}`,
-          `Entradas registradas: 42 · Salidas: 39`,
-          `Ej. NAM-487  entrada 10:40  salida 11:50`,
-        ].join('\n');
-        break;
-      case 'Reservas activas':
-        cuerpo = [
-          `Filtro: ${filtroTxt}`,
-          `Confirmadas: 18 · Pendientes: 5 · Vencidas: 2`,
-          `Próxima ventana crítica: mañana 08:00 – 09:30`,
-        ].join('\n');
-        break;
-      default:
-        cuerpo = [
-          `Consolidado de cobros (${this.repFechaDesde} – ${this.repFechaHasta})`,
-          `Total recaudado (simulado): $ 2.450.000 COP`,
-          `Últimas 3 transacciones: ADM-PAG-001, ADM-PAG-002, ADM-PAG-003`,
-        ].join('\n');
-    }
-
-    this.repVistaPrevia = [
-      `=== ${this.repTipo.toUpperCase()} ===`,
-      `Generado: ${new Date().toLocaleString('es-CO')}`,
-      `Formato solicitado: ${this.repFormato} · Gráficos: ${graf}`,
-      '',
-      cuerpo,
-    ].join('\n');
-    this.repMostrarResultado = true;
+    this.ejecutarDescarga(req, (raw) => {
+      const filas = ingresosAFilasExcel(mapIngresosReporte(raw));
+      const sufijo =
+        id > 0
+          ? this.etiquetaParqueadero(id).replace(/\s+/g, '-').toLowerCase()
+          : 'todos';
+      descargarExcel(nombreArchivoReporte(`ingresos-${sufijo}`), [
+        { nombre: 'Ingresos', filas },
+      ]);
+    });
   }
 
-  nuevaConsulta(): void {
-    this.repVistaPrevia = '';
-    this.repMostrarResultado = false;
+  generarPagos(): void {
+    this.ejecutarDescarga(this.reportesService.getPagosReporte(), (raw) => {
+      const resumen = mapPagosReporte(raw);
+      const filas = resumen
+        ? pagosAFilasExcel(resumen)
+        : [{ Mensaje: 'Sin datos de pagos' }];
+      descargarExcel(nombreArchivoReporte('pagos'), [{ nombre: 'Pagos', filas }]);
+    });
   }
 
-  simularDescarga(): void {
-    this.repVistaPrevia += `\n\n[Demo] Archivo ${this.repFormato} preparado para descarga.`;
+  private etiquetaParqueadero(id: number): string {
+    const op = this.parqueaderoOpciones().find((p) => p.id === id);
+    return op?.nombre ?? `parqueadero-${id}`;
+  }
+
+  private ejecutarDescarga(
+    request: ReturnType<Reportes['getOcupacion']>,
+    onOk: (raw: unknown) => void,
+  ): void {
+    this.errorMsg.set(null);
+    this.generando.set(true);
+    request
+      .pipe(
+        catchError((err) => {
+          const e = err as { error?: { message?: string; mensaje?: string } };
+          const b = e?.error;
+          this.errorMsg.set(
+            b?.message ?? b?.mensaje ?? 'No se pudo generar el reporte.',
+          );
+          return of(null);
+        }),
+        finalize(() => this.generando.set(false)),
+      )
+      .subscribe((raw) => {
+        if (raw == null) return;
+        onOk(raw);
+      });
   }
 }

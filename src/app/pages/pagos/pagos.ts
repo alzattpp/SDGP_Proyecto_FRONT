@@ -141,7 +141,7 @@ export class PagosComponent implements OnInit {
         this.actualizarContextoHistorial(ingresos, this.mediosRegistrados);
         this.historial = mapPagosHistorial(historial, this.historialCtx);
         const placasVehiculos = new Set(
-          mapVehiculosLista(vehiculos).map((v) => normalizarPlaca(v.placa)),
+          mapVehiculosLista(vehiculos, id).map((v) => normalizarPlaca(v.placa)),
         );
         this.procesarIngresosParaUsuario(ingresos, id, placasVehiculos);
         this.aplicarIngresoParqueadero();

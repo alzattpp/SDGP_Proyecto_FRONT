@@ -10,7 +10,6 @@
     }
     <div class="toolbar-actions">
       <button type="button" class="btn btn--toolbar" (click)="openMedios()">Medios de pago</button>
-      <button type="button" class="btn btn--toolbar" (click)="openEditar()">Editar datos</button>
       <button type="button" class="btn btn--toolbar" (click)="openPlaca()">Registrar placa</button>
     </div>
   </div>
@@ -173,28 +172,6 @@
         <button type="button" class="btn btn--link" (click)="volverListaMedios()">Volver</button>
       </form>
     }
-  </div>
-}
-
-@if (modalEditar) {
-  <div class="modal-backdrop" role="presentation" (click)="closeEditar()"></div>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editar-title" (click)="$event.stopPropagation()">
-    <h2 id="editar-title" class="modal-title">Editar datos</h2>
-    <form class="modal-form" (submit)="$event.preventDefault(); guardarPerfil()">
-      <div class="modal-field">
-        <label for="pf-nombre">Nombre</label>
-        <input id="pf-nombre" [(ngModel)]="editNombre" name="editNombre" type="text" />
-      </div>
-      <div class="modal-field">
-        <label for="pf-doc">Documento</label>
-        <input id="pf-doc" [(ngModel)]="editDocumento" name="editDocumento" type="text" />
-      </div>
-      <div class="modal-field">
-        <label for="pf-tipo">Tipo</label>
-        <input id="pf-tipo" [(ngModel)]="editTipo" name="editTipo" type="text" />
-      </div>
-      <button type="submit" class="btn btn--yellow">Guardar</button>
-    </form>
   </div>
 }
 

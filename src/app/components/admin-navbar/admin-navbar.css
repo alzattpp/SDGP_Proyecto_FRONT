@@ -2,18 +2,6 @@
   display: block;
 }
 
-.pre-bar {
-  margin: 0;
-  padding: 0.35rem clamp(1rem, 4vw, 3rem) 0;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #6b7a8c;
-  background: #e8eef3;
-  font-family: 'Roboto', system-ui, sans-serif;
-}
-
 .navbar {
   display: flex;
   align-items: center;

@@ -1,6 +1,3 @@
-@if (topLabel()) {
-  <p class="pre-bar" aria-hidden="false">{{ topLabel() }}</p>
-}
 <header class="navbar">
   <a routerLink="/trabajador" class="brand" aria-label="Inicio trabajador SDGP UAM">
     <span class="brand-mark">
@@ -23,13 +20,6 @@
       routerLinkActive="nav-item--active"
       [routerLinkActiveOptions]="{ exact: true }"
       >Gestión</a
-    >
-    <a
-      routerLink="/trabajador/reservas"
-      class="nav-item"
-      routerLinkActive="nav-item--active"
-      [routerLinkActiveOptions]="{ exact: true }"
-      >Reservas</a
     >
   </nav>
 

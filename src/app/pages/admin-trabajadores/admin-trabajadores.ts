@@ -56,7 +56,6 @@ export class AdminTrabajadoresComponent implements OnInit {
   editIdTrabajador: number | null = null;
   editNombreCompleto = '';
   editCorreo = '';
-  editContrasena = '';
   editDocumento = '';
   editTelefono = '';
   editIdParqueadero: number | null = null;
@@ -167,7 +166,6 @@ export class AdminTrabajadoresComponent implements OnInit {
     this.editIdTrabajador = row.idTrabajador;
     this.editNombreCompleto = row.nombreCompleto;
     this.editCorreo = row.correo;
-    this.editContrasena = '';
     this.editDocumento = row.documento;
     this.editTelefono = row.telefono;
     this.editIdParqueadero = row.idParqueadero > 0 ? row.idParqueadero : null;
@@ -184,7 +182,6 @@ export class AdminTrabajadoresComponent implements OnInit {
     if (!idT) return;
     const nombreCompleto = this.editNombreCompleto.trim();
     const correo = this.editCorreo.trim();
-    const contrasena = this.editContrasena.trim();
     const documento = this.editDocumento.trim();
     const telefono = this.editTelefono.trim();
     const idP = this.editIdParqueadero;
@@ -192,17 +189,9 @@ export class AdminTrabajadoresComponent implements OnInit {
       this.errorMsg.set('Completa todos los campos, incluido el parqueadero.');
       return;
     }
-    if (!contrasena) {
-      this.errorMsg.set(
-        'Ingresa la contraseña: el API valida el mismo cuerpo que al crear (como en Postman).',
-      );
-      return;
-    }
-    /** Mismo formato que createTrabajador / Postman; muchos backends exigen las 6 propiedades. */
-    const payload: Trabajador = {
+    const payload: Partial<Trabajador> = {
       nombreCompleto,
       correo,
-      contrasena,
       documento,
       telefono,
       idParqueadero: Number(idP),

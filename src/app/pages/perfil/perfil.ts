@@ -60,11 +60,6 @@ export class PerfilComponent implements OnInit {
   numeroMedio = '';
   cvvMedio = '';
 
-  modalEditar = false;
-  editNombre = '';
-  editDocumento = '';
-  editTipo = '';
-
   modalPlaca = false;
   nuevaPlaca = '';
   nuevaMarca = '';
@@ -146,6 +141,13 @@ export class PerfilComponent implements OnInit {
   }
 
   private cargarPlacas(): void {
+    const id = this.idUsuario;
+    if (!id) {
+      this.placas = [];
+      this.placasCargando.set(false);
+      return;
+    }
+
     this.placasError.set(null);
     this.placasCargando.set(true);
     this.vehiculosService
@@ -158,7 +160,7 @@ export class PerfilComponent implements OnInit {
         finalize(() => this.placasCargando.set(false)),
       )
       .subscribe((raw) => {
-        this.placas = mapVehiculosLista(raw);
+        this.placas = mapVehiculosLista(raw, id);
       });
   }
 
@@ -247,24 +249,6 @@ export class PerfilComponent implements OnInit {
           );
         },
       });
-  }
-
-  openEditar(): void {
-    this.editNombre = this.nombrePerfil();
-    this.editDocumento = this.documentoPerfil();
-    this.editTipo = this.tipoPerfil();
-    this.modalEditar = true;
-  }
-
-  closeEditar(): void {
-    this.modalEditar = false;
-  }
-
-  guardarPerfil(): void {
-    this.nombrePerfil.set(this.editNombre.trim() || this.nombrePerfil());
-    this.documentoPerfil.set(this.editDocumento.trim() || this.documentoPerfil());
-    this.tipoPerfil.set(this.editTipo.trim() || this.tipoPerfil());
-    this.closeEditar();
   }
 
   openPlaca(): void {

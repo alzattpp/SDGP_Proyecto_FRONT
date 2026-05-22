@@ -1,8 +1,12 @@
 import {
+  asParqueaderosArray,
+  mapParqueaderoListaItem,
+} from '../parqueaderos/map-parqueaderos-vista';
+import {
   asIngresosArray,
-  buildIngresosLookup,
   extraerIdIngreso,
   extraerIdParqueadero,
+  mapIngresoResumen,
 } from '../ingreso/map-ingreso';
 import {
   formatearFechaDesdeValor,
@@ -193,6 +197,150 @@ export function buildMediosPagoLookup(
   return map;
 }
 
+export interface AdminPagoRow {
+  idPago: number;
+  placa: string;
+  horaIngreso: string;
+  horaSalida: string;
+  fechaPago: string;
+  horaPago: string;
+  valor: number;
+  totalLabel: string;
+  medio: string;
+  medioDetalle: string;
+  nombrePagador: string;
+  nombreParqueadero: string;
+  estado: string;
+  referencia: string;
+  idIngreso: number;
+  idUsuario: number;
+}
+
+function formatearMontoCop(monto: number): string {
+  if (!Number.isFinite(monto)) return '—';
+  return `$${monto.toLocaleString('es-CO')} COP`;
+}
+
+function buildParqueaderosNombreLookup(raw: unknown): Map<number, string> {
+  const map = new Map<number, string>();
+  for (const x of asParqueaderosArray(raw)) {
+    const item = mapParqueaderoListaItem(x);
+    if (item) map.set(item.idParqueadero, item.nombre);
+  }
+  return map;
+}
+
+function buildIngresosAdminLookup(
+  raw: unknown,
+): Map<number, { placa: string; horaIngreso: string; horaSalida: string; idParqueadero: number }> {
+  const map = new Map<
+    number,
+    { placa: string; horaIngreso: string; horaSalida: string; idParqueadero: number }
+  >();
+  for (const x of asIngresosArray(raw)) {
+    const resumen = mapIngresoResumen(x);
+    if (!resumen) continue;
+    const horaSalida =
+      formatearHoraDesdeValor(
+        x['horaSalida'] ?? x['hora_salida'] ?? rec(x['ingreso'])?.['horaSalida'],
+      ) || '—';
+    map.set(resumen.idIngreso, {
+      placa: resumen.placa,
+      horaIngreso: resumen.horaIngreso,
+      horaSalida,
+      idParqueadero: resumen.idParqueadero,
+    });
+  }
+  return map;
+}
+
+function mapPagoAFilaAdmin(
+  x: Record<string, unknown>,
+  ingresosLookup: Map<
+    number,
+    { placa: string; horaIngreso: string; horaSalida: string; idParqueadero: number }
+  >,
+  mediosPorId: Map<number, { tipo: string; detalle: string }>,
+  usuariosPorId: Map<number, string>,
+  parqueaderosPorId: Map<number, string>,
+): AdminPagoRow {
+  const idPago = Number(x['idPago'] ?? x['id'] ?? 0);
+  const ing = rec(x['ingreso']);
+  const idIngreso = Number(x['idIngreso'] ?? ing?.['idIngreso'] ?? ing?.['id'] ?? 0);
+  const ingresoInfo = idIngreso > 0 ? ingresosLookup.get(idIngreso) : undefined;
+
+  let placa = String(x['placa'] ?? ing?.['placa'] ?? ingresoInfo?.placa ?? '').trim();
+  const monto = Number(x['monto'] ?? x['valor'] ?? 0);
+  const fechaRaw = x['fecha'] ?? x['fechaPago'] ?? x['createdAt'];
+  const fechaPago = formatearFechaDesdeValor(fechaRaw);
+  const horaPago = formatearHoraDesdeValor(fechaRaw) || '—';
+  const horaIngreso =
+    ingresoInfo?.horaIngreso ||
+    formatearHoraDesdeValor(ing?.['horaIngreso'] ?? x['horaIngreso']) ||
+    '—';
+  const horaSalida =
+    ingresoInfo?.horaSalida ||
+    formatearHoraDesdeValor(ing?.['horaSalida'] ?? x['horaSalida']) ||
+    '—';
+
+  const idParqueadero = Number(
+    ingresoInfo?.idParqueadero ??
+      extraerIdParqueadero(ing ?? {}) ??
+      extraerIdParqueadero(x) ??
+      0,
+  );
+  const nombreParqueadero =
+    (idParqueadero > 0 ? parqueaderosPorId.get(idParqueadero) : undefined) ??
+    (idParqueadero > 0 ? `Parqueadero #${idParqueadero}` : '—');
+
+  const { medio, detalle } = extraerMedio(x, mediosPorId);
+  const nombrePagador = nombrePagadorDesdePago(x, usuariosPorId) || '—';
+  const idUsuario = Number(x['idUsuario'] ?? x['id_usuario'] ?? 0);
+  const referencia =
+    idPago > 0 ? `PAG-${idPago}` : String(x['referencia'] ?? x['numeroReferencia'] ?? '—');
+
+  return {
+    idPago,
+    placa: placa || '—',
+    horaIngreso,
+    horaSalida,
+    fechaPago: fechaPago || '—',
+    horaPago,
+    valor: Number.isFinite(monto) ? monto : 0,
+    totalLabel: formatearMontoCop(monto),
+    medio: medio !== '—' ? medio : '—',
+    medioDetalle: detalle,
+    nombrePagador,
+    nombreParqueadero,
+    estado: etiquetaEstadoTabla(x),
+    referencia,
+    idIngreso,
+    idUsuario: Number.isFinite(idUsuario) ? idUsuario : 0,
+  };
+}
+
+/** Todos los pagos (sin filtrar por parqueadero), para administración. */
+export function mapPagosAdminLista(
+  rawPagos: unknown,
+  rawIngresos: unknown,
+  rawMedios?: unknown,
+  rawUsuarios?: unknown,
+  rawParqueaderos?: unknown,
+): AdminPagoRow[] {
+  const mediosPorId = buildMediosPagoLookup(rawMedios ?? []);
+  const usuariosPorId = buildUsuariosNombreLookup(rawUsuarios ?? []);
+  const ingresosLookup = buildIngresosAdminLookup(rawIngresos);
+  const parqueaderosPorId = buildParqueaderosNombreLookup(rawParqueaderos ?? []);
+
+  return asPagosArray(rawPagos)
+    .filter((x) => esPagoListable(x))
+    .map((x) =>
+      mapPagoAFilaAdmin(x, ingresosLookup, mediosPorId, usuariosPorId, parqueaderosPorId),
+    )
+    .filter((x) => x.idPago > 0 || x.placa !== '—' || x.valor > 0)
+    .sort((a, b) => b.idPago - a.idPago);
+}
+
 export function mapPagosTrabajadorLista(
   rawPagos: unknown,
   rawIngresos: unknown,
@@ -203,7 +351,6 @@ export function mapPagosTrabajadorLista(
   const mediosPorId = buildMediosPagoLookup(rawMedios ?? []);
   const usuariosPorId = buildUsuariosNombreLookup(rawUsuarios ?? []);
   const ingresosLista = asIngresosArray(rawIngresos);
-  const ingresosLookup = buildIngresosLookup(rawIngresos);
 
   const ingresosDelParqueadero = new Set<number>();
   for (const x of ingresosLista) {
@@ -223,45 +370,36 @@ export function mapPagosTrabajadorLista(
     filtrados = pagosLista.filter((x) => esPagoListable(x));
   }
 
+  const parqueaderosPorId = buildParqueaderosNombreLookup([]);
+  const ingresosAdminLookup = buildIngresosAdminLookup(rawIngresos);
+
   return filtrados
     .map((x) => {
-      const idPago = Number(x['idPago'] ?? x['id'] ?? 0);
-      const ing = rec(x['ingreso']);
-      const idIngreso = Number(
-        x['idIngreso'] ?? ing?.['idIngreso'] ?? ing?.['id'] ?? 0,
+      const fila = mapPagoAFilaAdmin(
+        x,
+        ingresosAdminLookup,
+        mediosPorId,
+        usuariosPorId,
+        parqueaderosPorId,
       );
-      const ingresoInfo = idIngreso > 0 ? ingresosLookup.get(idIngreso) : undefined;
-
-      let placa = String(x['placa'] ?? ing?.['placa'] ?? ingresoInfo?.placa ?? '').trim();
-      const monto = Number(x['monto'] ?? x['valor'] ?? 0);
-
-      const fechaRaw = x['fecha'] ?? x['fechaPago'] ?? x['createdAt'];
-      const fechaPago = formatearFechaDesdeValor(fechaRaw);
-      const horaPago = formatearHoraDesdeValor(fechaRaw) || '—';
       const fechaHoraPago =
-        formatearFechaHoraColombiaDesdeValor(fechaRaw) || `${fechaPago} ${horaPago}`;
-
-      const horaIngreso =
-        ingresoInfo?.horaIngreso ||
-        formatearHoraDesdeValor(ing?.['horaIngreso'] ?? x['horaIngreso']) ||
-        '—';
-
-      const { medio, detalle } = extraerMedio(x, mediosPorId);
-      const nombrePagador = nombrePagadorDesdePago(x, usuariosPorId) || '—';
+        formatearFechaHoraColombiaDesdeValor(
+          x['fecha'] ?? x['fechaPago'] ?? x['createdAt'],
+        ) || `${fila.fechaPago} ${fila.horaPago}`;
 
       return {
-        idPago,
-        placa: placa || '—',
-        horaPago,
-        fechaPago,
+        idPago: fila.idPago,
+        placa: fila.placa,
+        horaPago: fila.horaPago,
+        fechaPago: fila.fechaPago,
         fechaHoraPago,
-        estado: etiquetaEstadoTabla(x),
-        medio: medio !== '—' ? medio : '—',
-        medioDetalle: detalle,
-        valor: Number.isFinite(monto) ? monto : 0,
-        horaIngreso,
-        idIngreso,
-        nombrePagador,
+        estado: fila.estado,
+        medio: fila.medio,
+        medioDetalle: fila.medioDetalle,
+        valor: fila.valor,
+        horaIngreso: fila.horaIngreso,
+        idIngreso: fila.idIngreso,
+        nombrePagador: fila.nombrePagador,
       };
     })
     .filter((x) => x.idPago > 0 || x.placa !== '—' || x.valor > 0)

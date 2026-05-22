@@ -2,53 +2,115 @@
   <app-admin-navbar />
 
   <main class="main">
-    <h1 class="page-title">Parqueaderos</h1>
+    <div class="head-row">
+      <h1 class="page-title">Parqueaderos</h1>
+      <button
+        type="button"
+        class="btn-anadir"
+        (click)="abrirAgregar()"
+        [disabled]="cargando() || mutando()"
+      >
+        <span class="btn-anadir__icon" aria-hidden="true">+</span>
+        Añadir
+      </button>
+    </div>
 
-    <ul class="list" role="list">
-      @for (p of items(); track p.id) {
-        <li class="card">
-          <div class="card-body">
-            <h2 class="card-name">{{ p.nombre }}</h2>
-            <p class="card-line">Capacidad total: {{ p.capacidadTotal }} parqueaderos</p>
-            <p class="card-line">Cupos disponibles: {{ p.cuposDisponibles }} parqueaderos</p>
-          </div>
-          <div class="card-actions">
-            <button type="button" class="btn-edit" (click)="abrirEditar(p)" aria-label="Editar {{ p.nombre }}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path
-                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
-                />
-              </svg>
-            </button>
-            <button type="button" class="btn-del" (click)="abrirEliminar(p)" aria-label="Eliminar {{ p.nombre }}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  fill="#0069a3"
-                  d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                />
-              </svg>
-            </button>
-          </div>
-        </li>
-      }
-    </ul>
+    @if (errorMsg(); as err) {
+      <p class="banner-error" role="alert">{{ err }}</p>
+    }
+
+    @if (cargando()) {
+      <p class="banner-muted">Cargando parqueaderos…</p>
+    } @else if (!items().length) {
+      <p class="banner-muted">No hay parqueaderos registrados.</p>
+    } @else {
+      <ul class="list" role="list">
+        @for (p of items(); track p.idParqueadero) {
+          <li class="card">
+            <div class="card-body">
+              <h2 class="card-name">{{ p.nombre }}</h2>
+              <p class="card-line">Capacidad total: {{ p.capacidadTotal }} parqueaderos</p>
+              <p class="card-line">Cupos disponibles: {{ p.cuposDisponibles }} parqueaderos</p>
+              @if (p.requierePago) {
+                <p class="card-tag">Requiere pago</p>
+              }
+            </div>
+            <div class="card-actions">
+              <button
+                type="button"
+                class="btn-edit"
+                (click)="abrirEditar(p)"
+                [disabled]="mutando()"
+                [attr.aria-label]="'Editar ' + p.nombre"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="btn-del"
+                (click)="abrirEliminar(p)"
+                [disabled]="mutando()"
+                [attr.aria-label]="'Eliminar ' + p.nombre"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="#0069a3"
+                    d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+    }
   </main>
 </div>
+
+@if (modalAgregar) {
+  <div class="modal-backdrop" role="presentation" (click)="cerrarAgregar()"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-add-p" (click)="$event.stopPropagation()">
+    <h2 id="m-add-p" class="modal-title">Añadir parqueadero</h2>
+    <form class="modal-form" (submit)="$event.preventDefault(); guardarAgregar()">
+      <label class="mf">
+        <span>Nombre</span>
+        <input [(ngModel)]="addNombre" name="addNom" type="text" required />
+      </label>
+      <label class="mf">
+        <span>Capacidad máxima</span>
+        <input [(ngModel)]="addCapacidad" name="addCap" type="number" min="1" required />
+      </label>
+      <label class="mf mf--check">
+        <input [(ngModel)]="addRequierePago" name="addPago" type="checkbox" />
+        <span>Requiere pago </span>
+      </label>
+      <button type="submit" class="btn-aceptar" [disabled]="mutando()">ACEPTAR</button>
+    </form>
+  </div>
+}
 
 @if (modalEditar) {
   <div class="modal-backdrop" role="presentation" (click)="cerrarEditar()"></div>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-edit-p" (click)="$event.stopPropagation()">
-    <h2 id="m-edit-p" class="modal-title">Editar Parqueadero</h2>
+    <h2 id="m-edit-p" class="modal-title">Editar parqueadero</h2>
     <form class="modal-form" (submit)="$event.preventDefault(); guardarEditar()">
       <label class="mf">
         <span>Nombre</span>
-        <input [(ngModel)]="editNombre" name="nom" type="text" />
+        <input [(ngModel)]="editNombre" name="nom" type="text" required />
       </label>
       <label class="mf">
-        <span>Capacidad</span>
-        <input [(ngModel)]="editCapacidad" name="cap" type="number" min="1" />
+        <span>Capacidad máxima</span>
+        <input [(ngModel)]="editCapacidad" name="cap" type="number" min="1" required />
       </label>
-      <button type="submit" class="btn-aceptar">ACEPTAR</button>
+      <label class="mf mf--check">
+        <input [(ngModel)]="editRequierePago" name="editPago" type="checkbox" />
+        <span>Requiere pago </span>
+      </label>
+      <button type="submit" class="btn-aceptar" [disabled]="mutando()">ACEPTAR</button>
     </form>
   </div>
 }
@@ -56,11 +118,15 @@
 @if (modalEliminar) {
   <div class="modal-backdrop" role="presentation" (click)="cerrarEliminar()"></div>
   <div class="modal modal--del" role="dialog" aria-modal="true" aria-labelledby="m-del-p" (click)="$event.stopPropagation()">
-    <h2 id="m-del-p" class="modal-title">Eliminar Parqueadero</h2>
-    <p class="modal-msg">Desea eliminar el parqueadero {{ eliminarNombre }}</p>
+    <h2 id="m-del-p" class="modal-title">Eliminar parqueadero</h2>
+    <p class="modal-msg">¿Desea eliminar el parqueadero {{ eliminarNombre }}?</p>
     <div class="modal-btns">
-      <button type="button" class="btn-aceptar" (click)="confirmarEliminar()">ACEPTAR</button>
-      <button type="button" class="btn-cancel" (click)="cerrarEliminar()">CANCELAR</button>
+      <button type="button" class="btn-aceptar" (click)="confirmarEliminar()" [disabled]="mutando()">
+        ACEPTAR
+      </button>
+      <button type="button" class="btn-cancel" (click)="cerrarEliminar()" [disabled]="mutando()">
+        CANCELAR
+      </button>
     </div>
   </div>
 }

@@ -16,9 +16,18 @@ function asArray(raw: unknown): Record<string, unknown>[] {
   return [];
 }
 
-/** Normaliza `{ data: [{ placa, marca, idUsuario }] }` u otras variantes. */
-export function mapVehiculosLista(raw: unknown): PlacaItem[] {
+function extraerIdUsuarioVehiculo(x: Record<string, unknown>): number {
+  const id = Number(x['idUsuario'] ?? x['id_usuario'] ?? 0);
+  return Number.isFinite(id) && id > 0 ? id : 0;
+}
+
+/** Normaliza `{ data: [{ placa, marca, idUsuario }] }`. Si `idUsuario` se pasa, solo vehículos de ese usuario. */
+export function mapVehiculosLista(raw: unknown, idUsuario?: number): PlacaItem[] {
   return asArray(raw)
+    .filter((x) => {
+      if (idUsuario == null || idUsuario <= 0) return true;
+      return extraerIdUsuarioVehiculo(x) === idUsuario;
+    })
     .map((x) => {
       const placa = String(x['placa'] ?? '').trim();
       const marca = String(x['marca'] ?? '').trim();

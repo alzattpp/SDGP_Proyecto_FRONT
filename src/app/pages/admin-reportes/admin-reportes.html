@@ -1,8 +1,15 @@
 <div class="page">
-  <app-admin-navbar [topLabel]="'GESTIÓN DE REPORTES'" />
+  <app-admin-navbar />
 
   <main class="main">
     <h1 class="page-title">Reportes - Estadísticos</h1>
+
+    @if (errorMsg(); as err) {
+      <p class="banner-error" role="alert">{{ err }}</p>
+    }
+    @if (generando()) {
+      <p class="banner-muted">Generando Excel…</p>
+    }
 
     <div class="grid">
       <article class="card">
@@ -11,12 +18,24 @@
           Indica cuántos cupos están ocupados y cuántos disponibles en cada parqueadero.
         </p>
         <div class="card-actions">
-          <select class="select" [(ngModel)]="parqueaderoSel" name="p1">
-            @for (o of opciones; track o) {
-              <option [value]="o">{{ o }}</option>
+          <select
+            class="select"
+            [(ngModel)]="parqueaderoOcupacionId"
+            name="p1"
+            [disabled]="cargandoParqueaderos() || generando()"
+          >
+            @for (p of parqueaderoOpciones(); track p.id) {
+              <option [ngValue]="p.id">{{ p.nombre }}</option>
             }
           </select>
-          <button type="button" class="btn-gen" (click)="abrirGenerar('Ocupación actual', true)">Generar</button>
+          <button
+            type="button"
+            class="btn-gen"
+            (click)="generarOcupacion()"
+            [disabled]="cargandoParqueaderos() || generando()"
+          >
+            Generar Excel
+          </button>
         </div>
       </article>
 
@@ -26,27 +45,24 @@
           Lista de los vehículos que han entrado y salido, con placa y hora.
         </p>
         <div class="card-actions">
-          <select class="select" [(ngModel)]="parqueaderoSel" name="p2">
-            @for (o of opciones; track o) {
-              <option [value]="o">{{ o }}</option>
+          <select
+            class="select"
+            [(ngModel)]="parqueaderoIngresosId"
+            name="p2"
+            [disabled]="cargandoParqueaderos() || generando()"
+          >
+            @for (p of parqueaderoOpciones(); track p.id) {
+              <option [ngValue]="p.id">{{ p.nombre }}</option>
             }
           </select>
-          <button type="button" class="btn-gen" (click)="abrirGenerar('Ingresos vehiculares', true)">Generar</button>
-        </div>
-      </article>
-
-      <article class="card">
-        <h2 class="card-title">Reservas activas</h2>
-        <p class="card-desc">
-          Muestra cuántas reservas están confirmadas, pendientes o vencidas.
-        </p>
-        <div class="card-actions">
-          <select class="select" [(ngModel)]="parqueaderoSel" name="p3">
-            @for (o of opciones; track o) {
-              <option [value]="o">{{ o }}</option>
-            }
-          </select>
-          <button type="button" class="btn-gen" (click)="abrirGenerar('Reservas activas', true)">Generar</button>
+          <button
+            type="button"
+            class="btn-gen"
+            (click)="generarIngresos()"
+            [disabled]="cargandoParqueaderos() || generando()"
+          >
+            Generar Excel
+          </button>
         </div>
       </article>
 
@@ -56,62 +72,16 @@
           Historial de pagos en el parqueadero con cobro, mostrando el monto total y últimos registros.
         </p>
         <div class="card-actions card-actions--solo">
-          <button type="button" class="btn-gen" (click)="abrirGenerar('Pagos realizados', false)">Generar</button>
+          <button
+            type="button"
+            class="btn-gen"
+            (click)="generarPagos()"
+            [disabled]="generando()"
+          >
+            Generar Excel
+          </button>
         </div>
       </article>
     </div>
   </main>
 </div>
-
-@if (modalReporte) {
-  <div class="modal-backdrop" role="presentation" (click)="cerrarModal()"></div>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rep-mod-title" (click)="$event.stopPropagation()">
-    <h2 id="rep-mod-title" class="modal-title">{{ repTipo }}</h2>
-
-    @if (!repMostrarResultado) {
-      <form class="rep-form" (submit)="$event.preventDefault(); ejecutarConsulta()">
-        @if (repConFiltroParqueadero) {
-          <label class="rf">
-            <span>Parqueadero</span>
-            <select [(ngModel)]="repParqueadero" name="rparq">
-              @for (o of opciones; track o) {
-                <option [value]="o">{{ o }}</option>
-              }
-            </select>
-          </label>
-        } @else {
-          <p class="rf-info">Este reporte usa todos los parqueaderos.</p>
-        }
-
-
-        <label class="rf">
-          <span>Formato de salida</span>
-          <select [(ngModel)]="repFormato" name="rfmt">
-            <option value="PDF">PDF</option>
-            <option value="Excel">Excel</option>
-          </select>
-        </label>
-
-        <label class="rf rf--check">
-          <input [(ngModel)]="repIncluirGraficos" name="rgr" type="checkbox" />
-          <span>Incluir gráficos en el reporte</span>
-        </label>
-
-        <div class="modal-actions">
-          <button type="button" class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
-          <button type="submit" class="btn-run">Ejecutar consulta</button>
-        </div>
-      </form>
-    } @else {
-      <label class="rf rf--preview">
-        <span>Vista previa (simulada)</span>
-        <textarea [(ngModel)]="repVistaPrevia" name="rprev" rows="12" readonly class="preview-ta"></textarea>
-      </label>
-      <div class="modal-actions modal-actions--split">
-        <button type="button" class="btn-cancel" (click)="nuevaConsulta()">Nueva consulta</button>
-        <button type="button" class="btn-gen2" (click)="simularDescarga()">Simular descarga</button>
-        <button type="button" class="btn-run" (click)="cerrarModal()">Cerrar</button>
-      </div>
-    }
-  </div>
-}

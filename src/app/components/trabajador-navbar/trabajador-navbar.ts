@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, input, signal } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { catchError, finalize, of } from 'rxjs';
 
@@ -16,9 +16,6 @@ export class TrabajadorNavbarComponent {
   private readonly usuarioService = inject(UsuarioService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-
-  /** Texto opcional encima de la barra (ej. GESTIÓN DE PARQUEADEROS). */
-  readonly topLabel = input<string | null>(null);
 
   readonly menuAbierto = signal(false);
 

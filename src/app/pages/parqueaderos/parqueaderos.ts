@@ -1,9 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { catchError, finalize, forkJoin, map, of } from 'rxjs';
 
 import { UsuarioNavbarComponent } from '../../components/usuario-navbar/usuario-navbar';
+import {
+  asParqueaderosArray,
+  imagenCarroPorOcupacion,
+  mapParqueaderoListaItem,
+  porcentajesDesdeStats,
+} from '../../services/parqueaderos/map-parqueaderos-vista';
+import { ParqueaderoService } from '../../services/parqueaderos/parqueaderos.service';
 
-export interface Parqueadero {
+export interface ParqueaderoCard {
+  idParqueadero: number;
   nombre: string;
   capacidadTotal: number;
   cuposDisponibles: number;
@@ -18,37 +27,69 @@ export interface Parqueadero {
   templateUrl: './parqueaderos.html',
   styleUrl: './parqueaderos.css',
 })
-export class ParqueaderosComponent {
-  readonly items: Parqueadero[] = [
-    {
-      nombre: 'Parqueadero Biblioteca',
-      capacidadTotal: 40,
-      cuposDisponibles: 12,
-      ocupacionPct: 70,
-      disponibilidadPct: 30,
-    },
-    {
-      nombre: 'Parqueadero Bavaria',
-      capacidadTotal: 140,
-      cuposDisponibles: 70,
-      ocupacionPct: 50,
-      disponibilidadPct: 50,
-      nota:
-        'Recuerda que el costo del servicio puede pagarse en taquilla del parqueadero o en línea a través del sistema. Presenta tu comprobante al ingreso.',
-    },
-    {
-      nombre: 'Parqueadero Cúpula',
-      capacidadTotal: 58,
-      cuposDisponibles: 49,
-      ocupacionPct: 15,
-      disponibilidadPct: 85,
-    },
-  ];
+export class ParqueaderosComponent implements OnInit {
+  private readonly parqueaderoService = inject(ParqueaderoService);
 
-  /** Verde &lt; 35 %, amarillo 35–75 %, rojo &gt; 75 % (según disponibilidad). */
-  imagenCarro(disponibilidadPct: number): string {
-    if (disponibilidadPct < 35) return '/assets/carroVerde.png';
-    if (disponibilidadPct <= 75) return '/assets/carroAmarillo.png';
-    return '/assets/carroRojo.png';
+  readonly items = signal<ParqueaderoCard[]>([]);
+  readonly cargando = signal(true);
+  readonly errorMsg = signal<string | null>(null);
+
+  ngOnInit(): void {
+    this.cargar();
+  }
+
+  imagenCarro(ocupacionPct: number): string {
+    return imagenCarroPorOcupacion(ocupacionPct);
+  }
+
+  private cargar(): void {
+    this.cargando.set(true);
+    this.errorMsg.set(null);
+
+    this.parqueaderoService
+      .getParqueaderos()
+      .pipe(
+        catchError(() => {
+          this.errorMsg.set('No se pudieron cargar los parqueaderos.');
+          return of([]);
+        }),
+      )
+      .subscribe((raw) => {
+        const base = asParqueaderosArray(raw)
+          .map((p) => mapParqueaderoListaItem(p))
+          .filter((x): x is NonNullable<typeof x> => x != null);
+
+        if (!base.length) {
+          this.items.set([]);
+          this.cargando.set(false);
+          return;
+        }
+
+        forkJoin(
+          base.map((b) =>
+            this.parqueaderoService.getParqueaderoStats(b.idParqueadero).pipe(
+              catchError(() => of(null)),
+              map((stats) => ({ base: b, stats })),
+            ),
+          ),
+        )
+          .pipe(finalize(() => this.cargando.set(false)))
+          .subscribe((resultados) => {
+            this.items.set(
+              resultados.map(({ base, stats }) => {
+                const pct = porcentajesDesdeStats(stats, base.capacidadTotal);
+                return {
+                  idParqueadero: base.idParqueadero,
+                  nombre: base.nombre,
+                  nota: base.nota,
+                  capacidadTotal: pct.capacidadTotal || base.capacidadTotal,
+                  cuposDisponibles: pct.cuposDisponibles,
+                  ocupacionPct: pct.ocupacionPct,
+                  disponibilidadPct: pct.disponibilidadPct,
+                };
+              }),
+            );
+          });
+      });
   }
 }

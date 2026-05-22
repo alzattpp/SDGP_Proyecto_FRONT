@@ -129,6 +129,17 @@
   text-decoration: underline;
 }
 
+.lot-status {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #555;
+}
+
+.lot-status--error {
+  color: #b71c1c;
+  font-weight: 500;
+}
+
 .lot-card {
   display: flex;
   flex-wrap: wrap;

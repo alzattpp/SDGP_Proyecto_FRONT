@@ -324,7 +324,7 @@
   flex-shrink: 0;
 }
 
-/* Modales (misma base que ver-reservas) */
+/* Modales */
 .modal-backdrop {
   position: fixed;
   inset: 0;

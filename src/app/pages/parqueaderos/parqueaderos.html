@@ -5,7 +5,15 @@
     <p class="visitantes-banner">
       <a routerLink="/parqueaderos-visitantes" class="visitantes-banner__link">Parqueaderos visitantes — solo Parqueadero Bavaria</a>
     </p>
-    @for (p of items; track p.nombre) {
+    @if (cargando()) {
+      <p class="lot-status">Cargando parqueaderos…</p>
+    } @else if (errorMsg()) {
+      <p class="lot-status lot-status--error">{{ errorMsg() }}</p>
+    } @else if (!items().length) {
+      <p class="lot-status">No hay parqueaderos registrados.</p>
+    }
+
+    @for (p of items(); track p.idParqueadero) {
       <article class="lot-card">
         <div class="lot-info">
           <h2 class="lot-title">{{ p.nombre }}</h2>
@@ -17,7 +25,7 @@
         </div>
 
         <div class="lot-visual">
-          <img [src]="imagenCarro(p.disponibilidadPct)" alt="" class="lot-car" width="280" height="120" />
+          <img [src]="imagenCarro(p.ocupacionPct)" alt="" class="lot-car" width="280" height="120" />
         </div>
 
         <div class="lot-stats">

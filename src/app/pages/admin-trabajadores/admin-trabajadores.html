@@ -1,5 +1,5 @@
 <div class="page">
-  <app-admin-navbar [topLabel]="'GESTIÓN DE TRABAJADORES'" />
+  <app-admin-navbar />
 
   <main class="main">
     <div class="head-row">
@@ -158,14 +158,6 @@
         type="email"
         placeholder="Correo"
         autocomplete="email"
-      />
-      <input
-        [(ngModel)]="editContrasena"
-        name="epw"
-        class="inp-line"
-        type="password"
-        placeholder="Contraseña (requerida; misma que en Postman)"
-        autocomplete="new-password"
       />
       <input
         [(ngModel)]="editDocumento"

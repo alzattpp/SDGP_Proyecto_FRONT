@@ -5,6 +5,10 @@ import { catchError, finalize, of, switchMap } from 'rxjs';
 
 import { AuthService } from '../../auth/auth.service';
 import { UsuarioService } from '../../services/usuarios/usuario.service';
+import {
+  esCorreoAutonoma,
+  MENSAJE_CORREO_AUTONOMA,
+} from '../../utils/correo-institucional.util';
 
 @Component({
   selector: 'app-inicio',
@@ -27,6 +31,10 @@ export class InicioComponent {
     const contrasena = this.contrasena();
     if (!email || !contrasena) {
       this.errorMsg.set('Completa correo y contraseña.');
+      return;
+    }
+    if (!esCorreoAutonoma(email)) {
+      this.errorMsg.set(MENSAJE_CORREO_AUTONOMA);
       return;
     }
     this.errorMsg.set(null);
