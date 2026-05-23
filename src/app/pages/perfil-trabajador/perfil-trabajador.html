@@ -13,10 +13,7 @@
   <main class="main-wrap">
     <div class="profile-card">
       <section class="profile-section">
-        <div class="section-head">
-          <h2 class="section-title">Informacion</h2>
-          <button type="button" class="btn-editar" (click)="openEditar()">Editar datos</button>
-        </div>
+        <h2 class="section-title">Informacion</h2>
         <dl class="data-list">
           <div class="data-row">
             <dt>Nombre</dt>
@@ -48,14 +45,6 @@
           </div>
         </dl>
       </section>
-
-      <div class="actions">
-        <button type="button" class="btn btn--primary" (click)="solicitarCambio()">
-          Solicitar cambio de parqueadero
-        </button>
-        <button type="button" class="btn btn--yellow" (click)="reportarProblema()">Reportar Problema</button>
-        <button type="button" class="btn btn--primary" (click)="verReglas()">Ver reglas</button>
-      </div>
     </div>
   </main>
 
@@ -66,29 +55,3 @@
     </div>
   </footer>
 </div>
-
-@if (modalEditar) {
-  <div class="modal-backdrop" role="presentation" (click)="closeEditar()"></div>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-title" (click)="$event.stopPropagation()">
-    <h2 id="edit-title" class="modal-title">Editar datos</h2>
-    <form class="modal-form" (submit)="$event.preventDefault(); guardar()">
-      <div class="modal-field">
-        <label for="tb-nombre">Nombre</label>
-        <input id="tb-nombre" [(ngModel)]="editNombre" name="editNombre" type="text" />
-      </div>
-      <div class="modal-field">
-        <label for="tb-doc">Documento</label>
-        <input id="tb-doc" [(ngModel)]="editDocumento" name="editDocumento" type="text" />
-      </div>
-      <div class="modal-field">
-        <label for="tb-tipo">Tipo</label>
-        <input id="tb-tipo" [(ngModel)]="editTipo" name="editTipo" type="text" />
-      </div>
-      <div class="modal-field">
-        <label for="tb-tel">Teléfono</label>
-        <input id="tb-tel" [(ngModel)]="editTelefono" name="editTelefono" type="tel" />
-      </div>
-      <button type="submit" class="btn-guardar">Guardar</button>
-    </form>
-  </div>
-}
